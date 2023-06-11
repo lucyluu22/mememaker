@@ -1,14 +1,19 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { Provider } from 'react-redux'
-import { store } from './app/store'
+import { ThemeProvider } from 'styled-components'
+import { store } from './store'
 import App from './App'
-import './index.css'
+import GlobalStyle from './styles/GlobalStyles'
+import theme from './styles/themes'
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <Provider store={store}>
-      <App />
-    </Provider>
+    <ThemeProvider theme={theme}>
+      <Provider store={store}>
+        <App />
+      </Provider>
+      <GlobalStyle />
+    </ThemeProvider>
   </React.StrictMode>,
 )

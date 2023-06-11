@@ -14,9 +14,11 @@ module.exports = {
   },
   plugins: ['react-refresh'],
   rules: {
+    'import/prefer-default-export': 'off',
     'import/no-absolute-path': 'off',
-    'react/react-in-jsx-scope': 'off',
+    'arrow-parens': ['error', 'as-needed'],
     '@typescript-eslint/semi': ['error', 'never'],
+    'react/react-in-jsx-scope': 'off',
     'react-refresh/only-export-components': 'warn',
   },
 }
