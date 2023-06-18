@@ -7,19 +7,25 @@ const Container = styled.div`
   width: 100%;
   height: 100%;
 `
+const MainContent = styled.div`
+  flex: 1;
+  max-width: calc(100% - 480px);
+`
 
-const LayerSidebar = styled.div`
+const Sidebar = styled.div`
   flex: 0 0 480px;
-  border-left: 1px solid ${props => props.theme.colors.primaryBorder}
+  border-left: 1px solid ${props => props.theme.colors.primaryBorder};
 `
 
 function App() {
   return (
     <Container>
-      <MemeContainer />
-      <LayerSidebar>
+      <MainContent>
+        <MemeContainer />
+      </MainContent>
+      <Sidebar>
         <LayerContainer />
-      </LayerSidebar>
+      </Sidebar>
     </Container>
   )
 }

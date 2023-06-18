@@ -1,4 +1,4 @@
-import { AppTheme } from './AppTheme'
+import { AppTheme } from '../types/AppTheme'
 
 const theme: AppTheme = {
   scheme: 'dark',

@@ -18,7 +18,11 @@ module.exports = {
     'import/no-absolute-path': 'off',
     'arrow-parens': ['error', 'as-needed'],
     '@typescript-eslint/semi': ['error', 'never'],
+    '@typescript-eslint/no-explicit-any': 'off',
     'react/react-in-jsx-scope': 'off',
     'react-refresh/only-export-components': 'warn',
+    'react/require-default-props': ['error', {
+      functions: 'defaultArguments',
+    }],
   },
 }
