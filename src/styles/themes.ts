@@ -7,6 +7,7 @@ const theme: AppTheme = {
     primaryDark: '#111111',
     primaryBorder: '#000000',
     onPrimary: '#bababa',
+    onPrimaryDark: '#888888',
   },
 }
 

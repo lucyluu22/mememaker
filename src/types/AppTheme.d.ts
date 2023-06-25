@@ -8,6 +8,7 @@ export interface AppTheme {
     primaryDark: string;
     primaryBorder: string;
     onPrimary: string;
+    onPrimaryDark: string;
   };
 }
 
