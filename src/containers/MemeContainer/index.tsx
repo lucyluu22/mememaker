@@ -13,18 +13,11 @@ import { AdjustableView } from '../../components/AdjustableView'
 const Container = styled.div`
   height: 100%;
   width: 100%;
-  background: repeating-linear-gradient(
-    -45deg,
-    ${props => props.theme.colors.primary},
-    ${props => props.theme.colors.primary} 5px,
-    ${props => props.theme.colors.primaryDark} 5px,
-    ${props => props.theme.colors.primaryDark} 10px
-  );
 `
 
 const Meme = styled.div`
-  width: 3200px;
-  height: 2400px;
+  width: 800px;
+  height: 600px;
   background: white;
 `
 
@@ -44,7 +37,7 @@ export const MemeContainer = connector(({
   foo,
 }: MemeContainerProps) => (
   <Container>
-    <AdjustableView contentHeight={2400} contentWidth={3200}>
+    <AdjustableView contentHeight={600} contentWidth={800}>
       <Meme />
     </AdjustableView>
   </Container>
