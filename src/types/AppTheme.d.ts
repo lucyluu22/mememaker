@@ -5,6 +5,7 @@ export interface AppTheme {
   scheme: 'light' | 'dark',
   colors: {
     primary: string;
+    primaryLight: string;
     primaryDark: string;
     primaryBorder: string;
     onPrimary: string;

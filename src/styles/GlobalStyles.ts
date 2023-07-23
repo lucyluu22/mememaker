@@ -4,7 +4,6 @@ export default createGlobalStyle`
   :root {
     font-family: 'Helvetica Neue', 'Segoe UI', Helvetica, Arial, sans-serif;
     line-height: 1.5;
-    font-weight: 400;
 
     color-scheme: ${props => props.theme.scheme};
     color: ${props => props.theme.colors.onPrimary};
@@ -17,10 +16,11 @@ export default createGlobalStyle`
     -webkit-text-size-adjust: 100%;
   }
 
-  html, body, #root {
+  html, body, #app {
     margin: 0;
     padding: 0;
     min-width: 480px;
     height: 100vh;
+    overscroll-behavior: none;
   }
 `

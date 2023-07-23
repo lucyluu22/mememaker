@@ -4,6 +4,7 @@ const theme: AppTheme = {
   scheme: 'dark',
   colors: {
     primary: '#1f1f1f',
+    primaryLight: '#494949',
     primaryDark: '#111111',
     primaryBorder: '#000000',
     onPrimary: '#bababa',

@@ -8,7 +8,7 @@ import GlobalStyle from './styles/GlobalStyles'
 import theme from './styles/themes'
 import 'sanitize.css/sanitize.css'
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+ReactDOM.createRoot(document.getElementById('app') as HTMLElement).render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
       <Provider store={store}>

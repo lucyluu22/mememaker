@@ -7,4 +7,4 @@ import GridContainer from './GridContainer'
 import GridItem from './GridItem'
 import GridSpacer from './GridSpacer'
 
-export { GridContainer, GridItem, GridSpacer }
+export { GridContainer as Grid, GridItem, GridSpacer }
