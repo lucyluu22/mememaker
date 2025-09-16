@@ -1,0 +1,11 @@
+/*
+ * Declare all CSS theme vars here
+ */
+
+:root {
+  --on-primary-color: #bababa;
+  --primary-color: #1f1f1f;
+  --primary-color-darker: #111111;
+  --primary-color-border: #000000;
+  --border-radius: 4px;
+}

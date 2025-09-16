@@ -1,0 +1,28 @@
+/*
+ * Styles for the top level (and only top level) elements
+ * This is not an escape hatch for global styles!
+ */
+body {
+  height: 100dvh;
+  margin: 0;
+  padding: 0;
+
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
+    "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  color: var(--on-primary-color);
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--primary-color),
+    var(--primary-color) 5px,
+    var(--primary-color-darker) 5px,
+    var(--primary-color-darker) 10px
+  );
+}
+
+#root {
+  height: 100%;
+}
