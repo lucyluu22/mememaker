@@ -1,12 +1,18 @@
 import type { JSX } from "react"
 import styled from "styled-components"
 
-import { MemeView } from "src/features/view-meme/ui/MemeView"
+import { useLongPress } from "src/shared/ui/useLongPress"
+import { MemeView } from "src/features/view-meme"
+import {
+  useMemeContextMenu,
+  MemeContextMenu,
+} from "src/features/meme-context-menu"
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
+  user-select: none;
 `
 const Main = styled.main`
   flex: 1;
@@ -23,8 +29,28 @@ const VersionTag = styled.span`
 `
 
 export const MemeMaker = (): JSX.Element => {
+  const isTouchDevice = window.matchMedia("(pointer: coarse)").matches
+
+  const { show: showMemeContextMenu } = useMemeContextMenu()
+  const longPressHandlers = useLongPress({
+    onLongPress: event => {
+      showMemeContextMenu({ event })
+    },
+  })
+
   return (
-    <Container>
+    <Container
+      onTouchStart={longPressHandlers.onTouchStart}
+      onTouchEnd={longPressHandlers.onTouchEnd}
+      onTouchMove={longPressHandlers.onTouchMove}
+      onContextMenu={evt => {
+        evt.preventDefault()
+        if (!isTouchDevice) {
+          showMemeContextMenu({ event: evt })
+        }
+      }}
+    >
+      <MemeContextMenu />
       <header>
         <Title>
           MemeMaker <VersionTag>v1.0.0</VersionTag>

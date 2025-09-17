@@ -12,7 +12,6 @@ import type {
   TouchEvent,
 } from "react"
 import React from "react"
-import Impetus from "impetus"
 
 import { AdjustableViewContainer } from "./AdjustableViewContainer"
 import { AdjustableViewContent } from "./AdjustableViewContent"
@@ -60,16 +59,14 @@ export class AdjustableView extends React.PureComponent<
   zoomDelta: number
 
   prevPinchDistance: number | null
+  prevPointerX: number | null
+  prevPointerY: number | null
 
   gestureLastScale: number | null
 
   shouldPreventContextMenu: boolean
 
   shouldDispatchSelect: boolean
-
-  impetus: typeof Impetus
-
-  isImpetusPanEnabled: boolean
 
   // Since wheel events don't fire an "end" event we have to anticipate it with a reasonable debounce.
   debouncedWheelEnd = debounce(() => {
@@ -82,8 +79,9 @@ export class AdjustableView extends React.PureComponent<
     this.container = React.createRef()
     this.zoomDelta = 0
     this.prevPinchDistance = null
+    this.prevPointerX = null
+    this.prevPointerY = null
     this.gestureLastScale = null
-    this.isImpetusPanEnabled = false
     this.shouldPreventContextMenu = false
     this.shouldDispatchSelect = false
 
@@ -114,22 +112,6 @@ export class AdjustableView extends React.PureComponent<
       "gesturechange",
       this.onSafariGesture as EventListener,
     )
-
-    // Set up Impetus for mouse and touch panning.
-    let prevX = 0
-    let prevY = 0
-    this.impetus = new Impetus({
-      source: this.container.current,
-      update: (x: number, y: number) => {
-        const deltaX = prevX - x
-        const deltaY = prevY - y
-
-        prevX = x
-        prevY = y
-
-        if (this.isImpetusPanEnabled) this.onPanMove(deltaX, deltaY)
-      },
-    })
   }
 
   componentWillUnmount() {
@@ -147,8 +129,6 @@ export class AdjustableView extends React.PureComponent<
       "gesturechange",
       this.onSafariGesture as EventListener,
     )
-
-    this.impetus.destroy()
   }
 
   onContextMenu = (event: MouseEvent) => {
@@ -172,11 +152,11 @@ export class AdjustableView extends React.PureComponent<
       // Ctrl key is set to true when using pinch gesture on trackpad.
       this.onZoom(-deltaY * zoomTrackpadSensitivity)
       this.debouncedWheelEnd()
-    } else if (event.buttons === 2) {
-      // Otherwise assume user is using a mousewheel, holding right mouse.
+    } else if (event.shiftKey) {
+      // Otherwise assume mouse wheel if shift key is pressed.
       this.onZoom(Math.sign(deltaY) * zoomStep)
     } else {
-      // Mimic typical two-finger move gesture on trackpad.
+      // Wheel event on a trackpad, so do the usual two-finger move.
       this.onPanMove(deltaX, deltaY)
     }
   }
@@ -208,21 +188,25 @@ export class AdjustableView extends React.PureComponent<
   }
 
   onMouseDown = (evt: MouseEvent) => {
-    // Right mouse to activate panning.
-    const rightMouse = evt.button === 2
+    // Middle mouse to activate panning.
+    const middleMouse = evt.button === 1
+    this.prevPointerX = evt.clientX
+    this.prevPointerY = evt.clientY
 
-    if (rightMouse) {
-      evt.preventDefault() // Prevent click events while panning.
+    if (middleMouse) {
       this.onPanStart()
-    } else {
-      // Only dispatch select event if target is AdjustableViewContainer or
-      // AdjustableViewContent.
-      this.shouldDispatchSelect =
-        evt.target === evt.currentTarget ||
-        evt.target === evt.currentTarget.children[0]
-
-      this.isImpetusPanEnabled = false
     }
+  }
+
+  onMouseMove = (evt: MouseEvent) => {
+    if (!this.state.isPanning) return
+
+    const deltaX = (this.prevPointerX ?? evt.clientX) - evt.clientX
+    const deltaY = (this.prevPointerY ?? evt.clientY) - evt.clientY
+    this.prevPointerX = evt.clientX
+    this.prevPointerY = evt.clientY
+
+    this.onPanMove(deltaX, deltaY)
   }
 
   onMouseUp = (evt: MouseEvent) => {
@@ -231,7 +215,6 @@ export class AdjustableView extends React.PureComponent<
   }
 
   onPanStart = () => {
-    this.isImpetusPanEnabled = true
     this.setState({ isPanning: true })
   }
 
@@ -270,18 +253,33 @@ export class AdjustableView extends React.PureComponent<
 
   onTouchStart = ({ touches }: TouchEvent) => {
     this.prevPinchDistance = null
-    if (touches.length === 1) this.onPanStart()
-    else this.onPanEnd()
+    if (touches.length === 1) {
+      this.prevPointerX = touches[0].clientX
+      this.prevPointerY = touches[0].clientY
+      this.onPanStart()
+    } else {
+      this.onPanEnd()
+    }
   }
 
   onTouchMove = (evt: TouchEvent) => {
+    evt.preventDefault()
+
     const { touches } = evt
     const { zoomTouchSensitivity } = this.props
 
-    // Two finger pinch zoom.
-    if (touches.length === 2) {
-      evt.preventDefault()
+    // Typical one finger move.
+    if (this.state.isPanning && touches.length === 1) {
+      const t = touches[0]
+      const deltaX = (this.prevPointerX ?? t.clientX) - t.clientX
+      const deltaY = (this.prevPointerY ?? t.clientY) - t.clientY
+      this.prevPointerX = t.clientX
+      this.prevPointerY = t.clientY
 
+      this.onPanMove(deltaX, deltaY)
+    }
+    // Two finger pinch zoom.
+    else if (touches.length === 2) {
       const sensitivity = zoomTouchSensitivity / window.devicePixelRatio
       const [t1, t2] = Array.from(touches)
       const dist = Math.sqrt(
@@ -312,6 +310,7 @@ export class AdjustableView extends React.PureComponent<
         $isPanning={isPanning}
         onContextMenu={this.onContextMenu}
         onMouseDown={this.onMouseDown}
+        onMouseMove={this.onMouseMove}
         onMouseUp={this.onMouseUp}
         onMouseLeave={this.onPanEnd}
         onTouchStart={this.onTouchStart}

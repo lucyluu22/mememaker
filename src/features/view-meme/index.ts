@@ -1,6 +1,6 @@
 /**
  * View Meme Feature
- * Allows the user to view the meme being created.
+ * Shows the current meme being created.
  */
 
 export { memeViewSlice } from "./model/memeViewSlice"

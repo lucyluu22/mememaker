@@ -6,6 +6,9 @@ export const AdjustableViewContainer = styled.div<{ $isPanning: boolean }>`
   height: 100%;
   overflow: hidden;
   touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
 
   &,
   & * {

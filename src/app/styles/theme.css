@@ -7,5 +7,13 @@
   --primary-color: #1f1f1f;
   --primary-color-darker: #111111;
   --primary-color-border: #000000;
+  --secondary-color: #0b59b8;
+  --secondary-color-darker: #06346b;
+  --secondary-color-border: #042a4a;
+  --on-secondary-color: #dddddd;
   --border-radius: 4px;
+  --button-padding: 1rem;
+  --shadow:
+    1px 2px 2px rgba(0, 0, 0, 0.1), 2px 4px 4px rgba(0, 0, 0, 0.1),
+    3px 6px 6px rgba(0, 0, 0, 0.1);
 }
