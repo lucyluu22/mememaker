@@ -1,10 +1,8 @@
-import { combineSlices, configureStore } from "@reduxjs/toolkit"
+import { configureStore } from "@reduxjs/toolkit"
 
-import { memeViewSlice } from "src/features/view-meme/model/memeViewSlice"
+import { reducer as memeMakerReducer } from "src/pages/mememaker"
 
-// `combineSlices` automatically combines the reducers using
-// their `reducerPath`s, therefore we no longer need to call `combineReducers`.
-const rootReducer = combineSlices(memeViewSlice)
+const rootReducer = memeMakerReducer
 
 // Infer the `RootState` type from the root reducer
 export type RootState = ReturnType<typeof rootReducer>

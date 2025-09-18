@@ -1,20 +1,16 @@
 import "react-contexify/dist/ReactContexify.css"
 
-import type { JSX } from "react"
 import styled from "styled-components"
 
-import { Menu, Item, Separator, useContextMenu } from "react-contexify"
+import {
+  Menu as ContextifyMenu,
+  Item as ContextifyItem,
+  Separator as ContextifySeparator,
+  useContextMenu,
+} from "react-contexify"
 import { Icon } from "src/shared/ui/Icon"
-import { BiClipboard, BiImageAlt, BiText, BiExport } from "react-icons/bi"
 
-const CONTEXT_MENU_ID = "meme-context-menu"
-
-export const useMemeContextMenu = () =>
-  useContextMenu({
-    id: CONTEXT_MENU_ID,
-  })
-
-export const ThemedMenu = styled(Menu)`
+export const Menu = styled(ContextifyMenu).attrs({ animation: "slide" })`
   --contexify-zIndex: 666;
   --contexify-menu-minWidth: 220px;
   --contexify-menu-padding: 6px;
@@ -41,43 +37,12 @@ export const ThemedMenu = styled(Menu)`
   }
 `
 
-const MenuIcon = styled(Icon)`
+export const Item = styled(ContextifyItem)``
+
+export const Separator = styled(ContextifySeparator)``
+
+export const MenuIcon = styled(Icon)`
   margin-right: 0.5rem;
 `
 
-export interface ContextMenuProps {
-  id?: string
-  open: boolean
-}
-
-export const MemeContextMenu = (): JSX.Element => {
-  return (
-    <ThemedMenu id={CONTEXT_MENU_ID} animation="slide">
-      <Item>
-        <MenuIcon>
-          <BiClipboard />
-        </MenuIcon>
-        Paste
-      </Item>
-      <Item>
-        <MenuIcon>
-          <BiImageAlt />
-        </MenuIcon>
-        Add Image
-      </Item>
-      <Item>
-        <MenuIcon>
-          <BiText />
-        </MenuIcon>
-        Add Text
-      </Item>
-      <Separator />
-      <Item>
-        <MenuIcon>
-          <BiExport />
-        </MenuIcon>
-        Export To Image
-      </Item>
-    </ThemedMenu>
-  )
-}
+export { useContextMenu }
