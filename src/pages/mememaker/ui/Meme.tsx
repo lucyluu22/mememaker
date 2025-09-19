@@ -6,38 +6,37 @@ import type { MemeState } from "src/entities/meme"
 
 interface MemeProps {
   meme: MemeState
-  defaultWidth?: number
-  defaultHeight?: number
+  width?: number
+  height?: number
 }
-
 interface MemeContainerVars {
   "--meme-width": string
   "--meme-height": string
 }
 
+interface MemeImageVars {
+  "--image-width": string
+  "--image-height": string
+  "--image-x": string
+  "--image-y": string
+}
+
 const MemeContainer = styled.div`
+  position: relative;
   width: var(--meme-width);
   height: var(--meme-height);
   background: white;
 `
 
-export const Meme = ({
-  meme,
-  defaultWidth = 800,
-  defaultHeight = 600,
-}: MemeProps): JSX.Element => {
-  // Calculate width as the max x position plus the image's width
-  const width =
-    meme.images.length > 0
-      ? Math.max(...meme.images.map(img => img.x + img.scaledWidth))
-      : defaultWidth
-  // Calculate height as the max y position plus the image's height
-  const height =
-    meme.images.length > 0
-      ? Math.max(...meme.images.map(img => img.y + img.scaledHeight)) -
-        Math.min(...meme.images.map(img => img.y))
-      : defaultHeight
+const MemeImage = styled.img`
+  position: absolute;
+  top: var(--image-x);
+  left: var(--image-y);
+  width: var(--image-width);
+  height: var(--image-height);
+`
 
+export const Meme = ({ meme, width = 800, height = 600 }: MemeProps): JSX.Element => {
   return (
     <MemeContainer
       style={
@@ -46,6 +45,22 @@ export const Meme = ({
           "--meme-height": `${String(height)}px`,
         } satisfies MemeContainerVars as CSSProperties
       }
-    />
+    >
+      {meme.images.map(image => {
+        return (
+          <MemeImage
+            style={
+              {
+                "--image-width": `${String(image.scaledWidth)}px`,
+                "--image-height": `${String(image.scaledHeight)}px`,
+                "--image-x": `${String(image.x)}px`,
+                "--image-y": `${String(image.y)}px`,
+              } satisfies MemeImageVars as CSSProperties
+            }
+            src={image.url}
+          />
+        )
+      })}
+    </MemeContainer>
   )
 }

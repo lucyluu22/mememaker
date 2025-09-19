@@ -1,46 +1,66 @@
 import type { JSX } from "react"
+import { useRef } from "react"
 import { BiClipboard, BiImageAlt, BiText, BiExport } from "react-icons/bi"
 
-import {
-  Menu,
-  Item,
-  Separator,
-  MenuIcon,
-  useContextMenu,
-} from "src/shared/ui/ContextMenu"
+import type { MenuProps } from "src/shared/ui/ContextMenu"
+import { Menu, MenuItem, Separator, MenuIcon, useContextMenu } from "src/shared/ui/ContextMenu"
 
-const CONTEXT_MENU_ID = "meme-context-menu"
+export interface MemeContextMenuProps {
+  contextMenuProps: MenuProps
+  onAddImage: (file: string, naturalWidth: number, naturalHeight: number) => void
+}
 
-export const useMemeContextMenu = () => useContextMenu({ id: CONTEXT_MENU_ID })
+export const useMemeContextMenu = useContextMenu
 
-export const MemeContextMenu = (): JSX.Element => {
+export const MemeContextMenu = ({
+  contextMenuProps,
+  onAddImage,
+}: MemeContextMenuProps): JSX.Element => {
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
   return (
-    <Menu id={CONTEXT_MENU_ID}>
-      <Item>
+    <Menu {...contextMenuProps}>
+      <MenuItem>
         <MenuIcon>
           <BiClipboard />
         </MenuIcon>
         Paste
-      </Item>
-      <Item>
+      </MenuItem>
+      <MenuItem as="label">
         <MenuIcon>
           <BiImageAlt />
         </MenuIcon>
         Add Image
-      </Item>
-      <Item>
+        <input
+          ref={fileInputRef}
+          onChange={e => {
+            if (e.target.files) {
+              const image = e.target.files[0]
+              void (async () => {
+                const { width, height } = await createImageBitmap(image)
+                const fileUrl = URL.createObjectURL(image)
+                onAddImage(fileUrl, width, height)
+              })()
+            }
+          }}
+          type="file"
+          accept="image/*"
+          style={{ display: "none" }}
+        />
+      </MenuItem>
+      <MenuItem>
         <MenuIcon>
           <BiText />
         </MenuIcon>
         Add Text
-      </Item>
+      </MenuItem>
       <Separator />
-      <Item>
+      <MenuItem>
         <MenuIcon>
           <BiExport />
         </MenuIcon>
         Export To Image
-      </Item>
+      </MenuItem>
     </Menu>
   )
 }

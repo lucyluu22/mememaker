@@ -7,11 +7,11 @@
  * Yes.
  */
 
-import { createSlice } from "@reduxjs/toolkit"
+import { createSlice, nanoid } from "@reduxjs/toolkit"
 
 export interface MemeImage {
   id: string // unique identifier
-  file: File // The image file
+  url: string // The image file URL
   naturalWidth: number // original image width
   naturalHeight: number // original image height
   scaledWidth: number // user scaled width
@@ -28,28 +28,26 @@ export const initialState: MemeState = {
   images: [],
 }
 
-export const makeMemeSlice = <Name extends string = "meme">(
-  name: Name = "meme" as Name,
-) =>
+export const makeMemeSlice = <Name extends string = "meme">(name: Name = "meme" as Name) =>
   createSlice({
     name,
     initialState,
     reducers: create => ({
       addImage: create.preparedReducer(
         ({
-          id = crypto.randomUUID(),
-          file,
+          id = nanoid(),
+          url,
           naturalWidth,
           naturalHeight,
           scaledWidth = naturalWidth,
           scaledHeight = naturalHeight,
           x = 0,
           y = 0,
-        }: MemeImage) => {
+        }: RequireOnly<MemeImage, "url" | "naturalWidth" | "naturalHeight">) => {
           return {
             payload: {
               id,
-              file,
+              url,
               naturalWidth,
               naturalHeight,
               scaledWidth,
@@ -68,9 +66,7 @@ export const makeMemeSlice = <Name extends string = "meme">(
       }),
       updateImage: create.reducer(
         (state, action: { payload: Partial<MemeImage> & { id: string } }) => {
-          const index = state.images.findIndex(
-            img => img.id === action.payload.id,
-          )
+          const index = state.images.findIndex(img => img.id === action.payload.id)
           if (index !== -1) {
             state.images[index] = { ...state.images[index], ...action.payload }
           }

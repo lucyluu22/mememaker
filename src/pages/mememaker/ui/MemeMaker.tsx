@@ -4,11 +4,14 @@ import { useAppDispatch, useAppSelector } from "src/app/hooks"
 
 import { selectZoom, setZoom } from "../model/memeViewSlice"
 import { selectMeme } from "../model/memeSlice"
+import { addImage } from "../model/memeSlice"
 
 import { useLongPress } from "src/shared/ui/useLongPress"
 import { useMemeContextMenu, MemeContextMenu } from "./MemeContextMenu"
 import { AdjustableView } from "src/shared/ui/AdjustableView"
 import { Meme } from "./Meme"
+
+import { calculateMemeDimensions } from "../helpers/calculateMemeDimensions"
 
 const Container = styled.div`
   display: flex;
@@ -37,12 +40,26 @@ export const MemeMaker = (): JSX.Element => {
   const meme = useAppSelector(selectMeme)
   const dispatch = useAppDispatch()
 
-  const { show: showMemeContextMenu } = useMemeContextMenu()
+  const [openMemeContextMenu, closeMemeContextMenu, memeContextMenuProps] = useMemeContextMenu()
+
   const longPressHandlers = useLongPress({
     onLongPress: event => {
-      showMemeContextMenu({ event })
+      openMemeContextMenu({ event })
     },
   })
+
+  const { width, height } = calculateMemeDimensions(meme, 800, 600)
+
+  const onAddImage = (url: string, naturalWidth: number, naturalHeight: number) => {
+    dispatch(
+      addImage({
+        url,
+        naturalWidth,
+        naturalHeight,
+      }),
+    )
+    closeMemeContextMenu()
+  }
 
   return (
     <Container
@@ -52,11 +69,11 @@ export const MemeMaker = (): JSX.Element => {
       onContextMenu={evt => {
         evt.preventDefault()
         if (!isTouchDevice) {
-          showMemeContextMenu({ event: evt })
+          openMemeContextMenu({ event: evt })
         }
       }}
     >
-      <MemeContextMenu />
+      <MemeContextMenu onAddImage={onAddImage} contextMenuProps={memeContextMenuProps} />
       <header>
         <Title>
           MemeMaker <VersionTag>v1.0.0</VersionTag>
@@ -64,12 +81,12 @@ export const MemeMaker = (): JSX.Element => {
       </header>
       <Main>
         <AdjustableView
-          contentWidth={800}
-          contentHeight={600}
+          contentWidth={width}
+          contentHeight={height}
           zoom={zoom}
           onZoom={z => dispatch(setZoom(z))}
         >
-          <Meme meme={meme} />
+          <Meme meme={meme} width={width} height={height} />
         </AdjustableView>
       </Main>
     </Container>
