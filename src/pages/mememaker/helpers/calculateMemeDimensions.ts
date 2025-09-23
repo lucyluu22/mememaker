@@ -7,15 +7,10 @@ export const calculateMemeDimensions = (
 ): { width: number; height: number } => {
   // Calculate width as the max x position plus the image's width
   const width =
-    meme.images.length > 0
-      ? Math.max(...meme.images.map(img => img.x + img.scaledWidth))
-      : defaultWidth
+    meme.images.length > 0 ? Math.max(...meme.images.map(img => img.x + img.width)) : defaultWidth
   // Calculate height as the max y position plus the image's height
   const height =
-    meme.images.length > 0
-      ? Math.max(...meme.images.map(img => img.y + img.scaledHeight)) -
-        Math.min(...meme.images.map(img => img.y))
-      : defaultHeight
+    meme.images.length > 0 ? Math.max(...meme.images.map(img => img.y + img.height)) : defaultHeight
 
   return {
     width,

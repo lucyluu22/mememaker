@@ -1,5 +1,4 @@
 import type { JSX } from "react"
-import { useRef } from "react"
 import { BiClipboard, BiImageAlt, BiText, BiExport } from "react-icons/bi"
 
 import type { MenuProps } from "src/shared/ui/ContextMenu"
@@ -16,8 +15,6 @@ export const MemeContextMenu = ({
   contextMenuProps,
   onAddImage,
 }: MemeContextMenuProps): JSX.Element => {
-  const fileInputRef = useRef<HTMLInputElement>(null)
-
   return (
     <Menu {...contextMenuProps}>
       <MenuItem>
@@ -32,14 +29,15 @@ export const MemeContextMenu = ({
         </MenuIcon>
         Add Image
         <input
-          ref={fileInputRef}
+          key={String(contextMenuProps.open)} // rerender when context menu opens
           onChange={e => {
             if (e.target.files) {
               const image = e.target.files[0]
               void (async () => {
-                const { width, height } = await createImageBitmap(image)
+                const bitmap = await createImageBitmap(image)
                 const fileUrl = URL.createObjectURL(image)
-                onAddImage(fileUrl, width, height)
+                onAddImage(fileUrl, bitmap.width, bitmap.height)
+                bitmap.close()
               })()
             }
           }}

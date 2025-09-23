@@ -43,7 +43,7 @@ const MenuContainer = styled.div<{ $open: boolean }>`
   box-shadow: var(--shadow);
   min-width: 160px;
   padding: 0.25rem;
-  z-index: 1000;
+  z-index: var(--z-index-context-menu);
   animation: ${props => (props.$open ? slideIn : slideOut)} 0.3s;
   animation-fill-mode: forwards;
   transform-origin: top center;

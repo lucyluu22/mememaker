@@ -1,6 +1,6 @@
 import { combineSlices } from "@reduxjs/toolkit"
 
 import { memeSlice } from "./memeSlice"
-import { memeViewSlice } from "./memeViewSlice"
+import { memeCanvasSlice } from "./memeCanvasSlice"
 
-export const reducer = combineSlices(memeSlice, memeViewSlice)
+export const reducer = combineSlices(memeSlice, memeCanvasSlice)

@@ -12,10 +12,10 @@ import { createSlice, nanoid } from "@reduxjs/toolkit"
 export interface MemeImage {
   id: string // unique identifier
   url: string // The image file URL
+  width: number // user scaled width
+  height: number // user scaled height
   naturalWidth: number // original image width
   naturalHeight: number // original image height
-  scaledWidth: number // user scaled width
-  scaledHeight: number // user scaled height
   x: number // x position on the meme canvas
   y: number // y position on the meme canvas
 }
@@ -39,8 +39,8 @@ export const makeMemeSlice = <Name extends string = "meme">(name: Name = "meme" 
           url,
           naturalWidth,
           naturalHeight,
-          scaledWidth = naturalWidth,
-          scaledHeight = naturalHeight,
+          width = naturalWidth,
+          height = naturalHeight,
           x = 0,
           y = 0,
         }: RequireOnly<MemeImage, "url" | "naturalWidth" | "naturalHeight">) => {
@@ -50,8 +50,8 @@ export const makeMemeSlice = <Name extends string = "meme">(name: Name = "meme" 
               url,
               naturalWidth,
               naturalHeight,
-              scaledWidth,
-              scaledHeight,
+              width,
+              height,
               x,
               y,
             },
@@ -64,14 +64,12 @@ export const makeMemeSlice = <Name extends string = "meme">(name: Name = "meme" 
       removeImage: create.reducer((state, action: { payload: string }) => {
         state.images = state.images.filter(image => image.id !== action.payload)
       }),
-      updateImage: create.reducer(
-        (state, action: { payload: Partial<MemeImage> & { id: string } }) => {
-          const index = state.images.findIndex(img => img.id === action.payload.id)
-          if (index !== -1) {
-            state.images[index] = { ...state.images[index], ...action.payload }
-          }
-        },
-      ),
+      updateImage: create.reducer((state, action: { payload: RequireOnly<MemeImage, "id"> }) => {
+        const index = state.images.findIndex(img => img.id === action.payload.id)
+        if (index !== -1) {
+          state.images[index] = { ...state.images[index], ...action.payload }
+        }
+      }),
     }),
     selectors: {
       selectMeme: state => state,

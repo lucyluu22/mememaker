@@ -14,6 +14,18 @@
   --border-radius: 4px;
   --button-padding: 1rem;
   --shadow:
-    1px 2px 2px rgba(0, 0, 0, 0.1), 2px 4px 4px rgba(0, 0, 0, 0.1),
-    3px 6px 6px rgba(0, 0, 0, 0.1);
+    1px 2px 2px rgba(0, 0, 0, 0.1), 2px 4px 4px rgba(0, 0, 0, 0.1), 3px 6px 6px rgba(0, 0, 0, 0.1);
+
+  --z-index-context-menu: 1000;
+  --z-index-transform-controls: 100;
+
+  --transform-handle-size: 14px;
+  --transform-handle-border-color: white;
+  --transform-handle-color: var(--secondary-color);
+  --transform-region-color: var(--secondary-color);
+  --transform-region-border-color: white;
+
+  @media (pointer: coarse) {
+    --transform-handle-size: 24px;
+  }
 }

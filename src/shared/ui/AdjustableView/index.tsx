@@ -5,12 +5,7 @@
  */
 
 import { clamp, debounce, noop } from "lodash"
-import type {
-  RefObject,
-  PropsWithChildren,
-  MouseEvent,
-  TouchEvent,
-} from "react"
+import type { RefObject, PropsWithChildren, MouseEvent, TouchEvent } from "react"
 import React from "react"
 
 import { AdjustableViewContainer } from "./AdjustableViewContainer"
@@ -104,14 +99,8 @@ export class AdjustableView extends React.PureComponent<
       "gesturestart",
       this.onSafariGestureStart as EventListener,
     )
-    this.container.current?.addEventListener(
-      "gestureend",
-      this.onSafariGestureEnd as EventListener,
-    )
-    this.container.current?.addEventListener(
-      "gesturechange",
-      this.onSafariGesture as EventListener,
-    )
+    this.container.current?.addEventListener("gestureend", this.onSafariGestureEnd as EventListener)
+    this.container.current?.addEventListener("gesturechange", this.onSafariGesture as EventListener)
   }
 
   componentWillUnmount() {
@@ -179,8 +168,7 @@ export class AdjustableView extends React.PureComponent<
     const { zoomTrackpadSensitivity } = this.props
     const { scale } = event
 
-    const delta =
-      ((this.gestureLastScale ?? scale) - scale) * zoomTrackpadSensitivity * 100
+    const delta = ((this.gestureLastScale ?? scale) - scale) * zoomTrackpadSensitivity * 100
 
     this.gestureLastScale = scale
 
@@ -263,8 +251,6 @@ export class AdjustableView extends React.PureComponent<
   }
 
   onTouchMove = (evt: TouchEvent) => {
-    evt.preventDefault()
-
     const { touches } = evt
     const { zoomTouchSensitivity } = this.props
 
@@ -282,9 +268,7 @@ export class AdjustableView extends React.PureComponent<
     else if (touches.length === 2) {
       const sensitivity = zoomTouchSensitivity / window.devicePixelRatio
       const [t1, t2] = Array.from(touches)
-      const dist = Math.sqrt(
-        (t2.clientX - t1.clientX) ** 2 + (t2.clientY - t1.clientY) ** 2,
-      )
+      const dist = Math.sqrt((t2.clientX - t1.clientX) ** 2 + (t2.clientY - t1.clientY) ** 2)
 
       const delta = ((this.prevPinchDistance ?? dist) - dist) * sensitivity
 
