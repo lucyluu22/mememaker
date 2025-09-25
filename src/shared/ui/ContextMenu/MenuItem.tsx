@@ -1,6 +1,11 @@
+import type React from "react"
 import styled from "styled-components"
+export interface MenuItemProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  disabled?: boolean
+  $danger?: boolean
+}
 
-export const MenuItem = styled.button<{ disabled?: boolean }>`
+export const MenuItem = styled.button<MenuItemProps>`
   display: block;
   flex: 1;
   padding: var(--button-padding);
@@ -14,8 +19,21 @@ export const MenuItem = styled.button<{ disabled?: boolean }>`
   font: inherit;
   white-space: nowrap;
 
+  ${props =>
+    props.$danger &&
+    `
+    color: var(--context-danger-color);
+  `}
+
   &:hover:not(:disabled) {
     background: var(--secondary-color);
     color: var(--on-secondary-color);
+
+    ${props =>
+      props.$danger &&
+      `
+      background: var(--context-danger-color);
+      color: var(--on-context-danger-color);
+    `}
   }
 `

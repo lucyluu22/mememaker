@@ -11,6 +11,13 @@
   --secondary-color-darker: #06346b;
   --secondary-color-border: #042a4a;
   --on-secondary-color: #dddddd;
+
+  /* Context state colors */
+  --on-context-danger-color: #dddddd;
+  --context-danger-color: #ff4d4f;
+  --context-danger-border: #a8071a;
+
+  --spacing-unit: 0.25rem;
   --border-radius: 4px;
   --button-padding: 1rem;
   --shadow:

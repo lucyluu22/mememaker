@@ -23,6 +23,9 @@ export const useLongPress = ({
   vibrateMs = 200,
 }: UseLongPressOptions): UseLongPressHandlers => {
   const longPressTimer = useRef<NodeJS.Timeout | null>(null)
+  const onLongPressRef = useRef(onLongPress)
+  onLongPressRef.current = onLongPress
+
   return {
     onTouchStart: (e: React.TouchEvent) => {
       if (e.touches.length !== 1) return
@@ -30,7 +33,7 @@ export const useLongPress = ({
         // The vibration API is not defined in all browsers and will throw if called
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         navigator.vibrate?.(vibrateMs)
-        onLongPress(e)
+        onLongPressRef.current(e)
       }, thresholdMs)
     },
     onTouchEnd: () => {

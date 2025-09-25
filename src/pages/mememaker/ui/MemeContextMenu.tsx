@@ -1,22 +1,39 @@
 import type { JSX } from "react"
 import { BiClipboard, BiImageAlt, BiText, BiExport } from "react-icons/bi"
+import { useAppDispatch } from "src/app/hooks"
+
+import { setActiveElementId } from "../model/memeCanvasSlice"
+import { addImage } from "../model/memeSlice"
 
 import type { MenuProps } from "src/shared/ui/ContextMenu"
-import { Menu, MenuItem, Separator, MenuIcon, useContextMenu } from "src/shared/ui/ContextMenu"
-
-export interface MemeContextMenuProps {
-  contextMenuProps: MenuProps
-  onAddImage: (file: string, naturalWidth: number, naturalHeight: number) => void
-}
+import {
+  Menu,
+  MenuHeader,
+  MenuItem,
+  Separator,
+  MenuIcon,
+  useContextMenu,
+} from "src/shared/ui/ContextMenu"
 
 export const useMemeContextMenu = useContextMenu
 
-export const MemeContextMenu = ({
-  contextMenuProps,
-  onAddImage,
-}: MemeContextMenuProps): JSX.Element => {
+export const MemeContextMenu = (contextMenuProps: MenuProps): JSX.Element => {
+  const dispatch = useAppDispatch()
+
+  const onAddImage = (url: string, naturalWidth: number, naturalHeight: number) => {
+    const addImageAction = addImage({
+      url,
+      naturalWidth,
+      naturalHeight,
+    })
+    dispatch(addImageAction)
+    dispatch(setActiveElementId(addImageAction.payload.id))
+    contextMenuProps.onClose()
+  }
+
   return (
     <Menu {...contextMenuProps}>
+      <MenuHeader>Meme</MenuHeader>
       <MenuItem>
         <MenuIcon>
           <BiClipboard />

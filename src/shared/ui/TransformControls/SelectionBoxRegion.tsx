@@ -1,4 +1,4 @@
-import type { JSX, CSSProperties, UIEvent } from "react"
+import type { JSX, CSSProperties } from "react"
 import { useEffect, useRef } from "react"
 import styled from "styled-components"
 
@@ -14,16 +14,17 @@ export interface SelectionBoxRegionProps {
   scale?: number
   allowMove?: boolean
   sensitivity?: number
+  zIndex?: number
+  selectionBoxProps?: React.HTMLAttributes<HTMLDivElement>
   onDrag: (delta: PointDelta) => void
   onDragStart: () => void
-  onSelect: (evt: UIEvent) => void
   children?: React.ReactNode
 }
 
 const Region = styled.div<{ $active: boolean; $allowMove: boolean }>`
   position: absolute;
   cursor: ${props => (props.$active && props.$allowMove ? "move" : "auto")};
-  z-index: calc(var(--z-index-transform-controls) + ${props => (props.$active ? 1 : 0)});
+  z-index: ${props => (props.$active ? `99999` : `var(--z-index)`)};
   box-shadow:
     0 0 0 calc(var(--scale) * 1) var(--transform-region-border-color, white),
     0 0 0 calc(var(--scale) * 3) var(--transform-region-color, black),
@@ -39,10 +40,11 @@ export const SelectionBoxRegion = ({
   height,
   scale = 1,
   allowMove = true,
+  zIndex = 0,
   sensitivity = 1,
+  selectionBoxProps = {},
   onDrag,
   onDragStart,
-  onSelect,
   children,
 }: SelectionBoxRegionProps): JSX.Element => {
   const hasDragged = useRef(false)
@@ -67,6 +69,7 @@ export const SelectionBoxRegion = ({
 
   return (
     <Region
+      {...selectionBoxProps}
       ref={selectionBox}
       style={
         {
@@ -75,23 +78,21 @@ export const SelectionBoxRegion = ({
           top: y,
           left: x,
           "--scale": `${String(scale)}px`,
+          "--z-index": zIndex,
+          ...selectionBoxProps.style,
         } as CSSProperties
       }
       $active={active}
       $allowMove={allowMove}
-      onClick={evt => {
-        if (evt.target === evt.currentTarget && !hasDragged.current) {
-          onSelect(evt)
-        }
-      }}
       onMouseDown={evt => {
+        selectionBoxProps.onMouseDown?.(evt)
         if (active && evt.target === evt.currentTarget && evt.button === 0) {
           startDrag(evt)
         }
       }}
       onTouchStart={evt => {
+        selectionBoxProps.onTouchStart?.(evt)
         if (active && evt.target === evt.currentTarget) {
-          evt.stopPropagation()
           startDrag(evt)
         }
       }}

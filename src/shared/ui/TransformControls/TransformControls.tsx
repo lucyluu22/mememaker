@@ -1,4 +1,4 @@
-import type { JSX, PropsWithChildren, UIEvent } from "react"
+import type { JSX, PropsWithChildren } from "react"
 import { flow, clamp } from "lodash/fp"
 import ReactDOM from "react-dom"
 import { useRef } from "react"
@@ -34,9 +34,10 @@ export interface TransformControlProps {
   allowMove?: boolean // allow user to move the element
   allowResizeWidth?: boolean // allow user to resize element width
   allowResizeHeight?: boolean // allow user to resize element height
+  zIndex?: number // z-index of the selection box region
+  selectionBoxProps?: React.HTMLAttributes<HTMLDivElement>
   onMove: (x: number, y: number) => void
   onResize: (width: number, height: number) => void
-  onSelect: (evt: UIEvent) => void
   onDeselect?: () => void
 }
 
@@ -61,9 +62,10 @@ export const TransformControls = ({
   allowMove = true,
   allowResizeWidth = true,
   allowResizeHeight = true,
+  zIndex = 0,
+  selectionBoxProps = {},
   onMove,
   onResize,
-  onSelect,
   children,
 }: PropsWithChildren<TransformControlProps>): JSX.Element => {
   // We need to track internal states before any transformations are applied.
@@ -94,7 +96,9 @@ export const TransformControls = ({
       clamp(minY)(maxY - height),
     )(rawY.current)
 
-    onMove(newX, newY)
+    if (newX !== x || newY !== y) {
+      onMove(newX, newY)
+    }
   }
 
   const onHandleDragStart = () => {
@@ -198,9 +202,10 @@ export const TransformControls = ({
           height={height}
           scale={scale}
           allowMove={allowMove}
+          zIndex={zIndex}
           onDrag={onRegionDrag}
           onDragStart={onRegionDragStart}
-          onSelect={onSelect}
+          selectionBoxProps={selectionBoxProps}
         >
           {getHandleAnchors().map(anchor => (
             <SelectionBoxHandle

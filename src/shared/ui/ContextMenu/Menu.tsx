@@ -25,10 +25,11 @@ const slideOut = keyframes`
   }
 `
 
-export interface MenuProps {
+export interface MenuProps<Context = undefined> {
   open: boolean
   x: number
   y: number
+  context?: Context
   onClose: () => void
 }
 
@@ -42,7 +43,7 @@ const MenuContainer = styled.div<{ $open: boolean }>`
   border-radius: var(--border-radius);
   box-shadow: var(--shadow);
   min-width: 160px;
-  padding: 0.25rem;
+  padding: var(--spacing-unit);
   z-index: var(--z-index-context-menu);
   animation: ${props => (props.$open ? slideIn : slideOut)} 0.3s;
   animation-fill-mode: forwards;
@@ -72,7 +73,6 @@ export const Menu = ({
   // Handle close on outside interaction
   useEffect(() => {
     if (!open) return
-
     const handleClose = (e: Event) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         onClose()

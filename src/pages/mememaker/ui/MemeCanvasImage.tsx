@@ -1,4 +1,4 @@
-import { type JSX } from "react"
+import { useRef, type JSX } from "react"
 import styled from "styled-components"
 
 import type { MemeImage } from "src/entities/meme"
@@ -6,7 +6,7 @@ import type { SnapBoundaries } from "src/shared/ui/TransformControls"
 import { useAppSelector, useAppDispatch } from "src/app/hooks"
 import { TransformControls } from "src/shared/ui/TransformControls"
 
-import { updateImage } from "../model/memeSlice"
+import { updateImage, selectOrderIndexById } from "../model/memeSlice"
 import {
   selectIsActiveElement,
   selectInverseZoomScale,
@@ -26,14 +26,19 @@ export const MemeCanvasImage = ({
   snapBoundaries,
   image: { id, url, x, y, width, height, naturalWidth, naturalHeight },
 }: MemeCanvasImageProps): JSX.Element => {
+  const hasInteracted = useRef(false)
+
   const isActive = useAppSelector(state => selectIsActiveElement(state, id))
   const inverseZoomScale = useAppSelector(selectInverseZoomScale)
+  const orderIndex = useAppSelector(state => selectOrderIndexById(state, id))
   const dispatch = useAppDispatch()
 
   const moveImageHandler = (x: number, y: number) => {
+    hasInteracted.current = true
     dispatch(updateImage({ id, x, y }))
   }
   const resizeImageHandler = (width: number, height: number) => {
+    hasInteracted.current = true
     dispatch(updateImage({ id, width, height }))
   }
 
@@ -47,9 +52,22 @@ export const MemeCanvasImage = ({
       scale={inverseZoomScale}
       snapBoundaries={snapBoundaries}
       ratio={naturalWidth / naturalHeight}
+      zIndex={orderIndex}
       onMove={moveImageHandler}
       onResize={resizeImageHandler}
-      onSelect={() => dispatch(setActiveElementId(id))}
+      selectionBoxProps={{
+        onMouseDown: () => {
+          hasInteracted.current = false
+        },
+        onTouchStart: () => {
+          hasInteracted.current = false
+        },
+        onClick: () => {
+          if (!hasInteracted.current) {
+            dispatch(setActiveElementId(isActive ? null : id))
+          }
+        },
+      }}
     >
       <Image
         src={url}
@@ -58,6 +76,7 @@ export const MemeCanvasImage = ({
           left: x,
           width,
           height,
+          zIndex: orderIndex,
         }}
       />
     </TransformControls>
