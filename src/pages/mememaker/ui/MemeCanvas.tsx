@@ -84,6 +84,7 @@ export const MemeCanvas = (): JSX.Element => {
     () =>
       getSnapBoundaries([
         { x: 0, y: 0, width, height },
+        { x: width / 2, y: height / 2, width: 0, height: 0 }, // center point
         ...meme.images.filter(({ id }) => id !== activeElementId),
       ]),
     [activeElementId], // eslint-disable-line react-hooks/exhaustive-deps

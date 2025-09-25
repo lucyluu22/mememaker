@@ -87,12 +87,12 @@ export const TransformControls = ({
     rawY.current += dY
 
     const newX = flow(
-      snapToThreshold(snapBoundaries.x)([0, width]),
+      snapToThreshold(snapBoundaries.x)([0, width / 2, width]),
       clamp(minX)(maxX - width),
     )(rawX.current)
 
     const newY = flow(
-      snapToThreshold(snapBoundaries.y)([0, height]),
+      snapToThreshold(snapBoundaries.y)([0, height / 2, height]),
       clamp(minY)(maxY - height),
     )(rawY.current)
 
