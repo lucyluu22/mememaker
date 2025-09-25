@@ -108,7 +108,7 @@ export const MemeImageContextMenu = ({
         <MenuIcon>
           <BiMinusFront />
         </MenuIcon>
-        Send to Front
+        Bring to Front
       </MenuItem>
       <MenuItem onClick={onSendToBack}>
         <MenuIcon>
