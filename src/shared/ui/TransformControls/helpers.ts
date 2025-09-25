@@ -1,4 +1,4 @@
-import { flatMap, sortBy } from "lodash"
+import { flatMap, sortBy, uniq } from "lodash"
 
 export interface TransformableElement {
   x: number
@@ -18,8 +18,8 @@ export interface SnapBoundaries {
  */
 export const getSnapBoundaries = (elements: TransformableElement[]): SnapBoundaries => {
   return {
-    x: sortBy(flatMap(elements, ({ x, width }) => [x, x + width])),
-    y: sortBy(flatMap(elements, ({ y, height }) => [y, y + height])),
+    x: uniq(sortBy(flatMap(elements, ({ x, width }) => [x, x + width]))),
+    y: uniq(sortBy(flatMap(elements, ({ y, height }) => [y, y + height]))),
   }
 }
 
