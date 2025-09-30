@@ -3,28 +3,32 @@
  */
 
 :root {
-  --on-primary-color: #bababa;
   --primary-color: #1f1f1f;
   --primary-color-darker: #111111;
   --primary-color-border: #000000;
+  --on-primary-color: #bababa;
   --secondary-color: #0b59b8;
   --secondary-color-darker: #06346b;
   --secondary-color-border: #042a4a;
   --on-secondary-color: #dddddd;
 
   /* Context state colors */
-  --on-context-danger-color: #dddddd;
-  --context-danger-color: #ff4d4f;
-  --context-danger-border: #a8071a;
+  --context-color-danger: #ff4d4f;
+  --context-color-danger-border: #a8071a;
+  --on-context-color-danger: #dddddd;
 
   --spacing-unit: 0.25rem;
+  --input-height: 3rem;
+  --toolbar-height: 3rem;
+  --button-padding: calc(var(--spacing-unit) * 2);
+  --input-padding: 0 calc(var(--spacing-unit) * 2);
   --border-radius: 4px;
-  --button-padding: 1rem;
   --shadow:
     1px 2px 2px rgba(0, 0, 0, 0.1), 2px 4px 4px rgba(0, 0, 0, 0.1), 3px 6px 6px rgba(0, 0, 0, 0.1);
 
   --z-index-context-menu: 1000;
   --z-index-transform-controls: 100;
+  --z-index-toolbar: 100;
 
   --transform-handle-size: 14px;
   --transform-handle-border-color: white;
@@ -34,5 +38,6 @@
 
   @media (pointer: coarse) {
     --transform-handle-size: 24px;
+    --button-padding: calc(var(--spacing-unit) * 4);
   }
 }

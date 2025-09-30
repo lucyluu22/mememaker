@@ -1,5 +1,5 @@
 import type { JSX } from "react"
-import { useEffect, useMemo, useRef } from "react"
+import { useEffect, useMemo } from "react"
 
 import styled from "styled-components"
 import { useAppDispatch, useAppSelector } from "src/app/hooks"
@@ -19,8 +19,11 @@ import { useLongPress } from "src/shared/ui/useLongPress"
 import { MemeContextMenu, useMemeContextMenu } from "./MemeContextMenu"
 import { MemeImageContextMenu, useMemeImageContextMenu } from "./MemeImageContextMenu"
 import { MemeCanvasImage } from "./MemeCanvasImage"
+import { MemeCanvasText } from "./MemeCanvasText"
 
 import { calculateMemeDimensions } from "../helpers/calculateMemeDimensions"
+import { PREVENT_DESELECT_CLASS } from "./constants"
+import { ToolbarRoot } from "src/shared/ui/Toolbar"
 
 const MemeContainer = styled.div`
   position: relative;
@@ -29,9 +32,6 @@ const MemeContainer = styled.div`
 
 export const MemeCanvas = (): JSX.Element => {
   const isTouchDevice = window.matchMedia("(pointer: coarse)").matches
-
-  const transformControlsRootRef = useRef<HTMLDivElement>(null)
-  const contextMenuRootRef = useRef<HTMLDivElement>(null)
 
   const zoom = useAppSelector(selectZoom)
   const meme = useAppSelector(selectMeme)
@@ -57,10 +57,9 @@ export const MemeCanvas = (): JSX.Element => {
 
   useEffect(() => {
     const handleDeselect = (evt: MouseEvent) => {
-      if (
-        !transformControlsRootRef.current?.contains(evt.target as Node) &&
-        !contextMenuRootRef.current?.contains(evt.target as Node)
-      ) {
+      const blacklist = document.getElementsByClassName(PREVENT_DESELECT_CLASS)
+
+      if (evt.button === 0 && Array.from(blacklist).every(el => !el.contains(evt.target as Node))) {
         dispatch(setActiveElementId(null))
       }
     }
@@ -80,40 +79,40 @@ export const MemeCanvas = (): JSX.Element => {
 
   // The snap boundaries should only recalculate when the active element changes.
   // That is, when the user will be moving/resizing something.
+  const memeLayers = useMemo(() => [...meme.images, ...meme.text], [meme.images, meme.text])
   const snapBoundaries = useMemo(
     () =>
       getSnapBoundaries([
         { x: 0, y: 0, width, height },
         { x: width / 2, y: height / 2, width: 0, height: 0 }, // center point
-        ...meme.images.filter(({ id }) => id !== activeElementId),
+        ...memeLayers.filter(({ id }) => id !== activeElementId),
       ]),
     [activeElementId], // eslint-disable-line react-hooks/exhaustive-deps
   )
 
   return (
     <>
-      <div ref={contextMenuRootRef}>
-        <MemeContextMenu {...memeContextMenuProps} />
-        <MemeImageContextMenu {...imageContextMenuProps} />
-      </div>
+      <MemeContextMenu
+        {...memeContextMenuProps}
+        menuContainerProps={{ className: PREVENT_DESELECT_CLASS }}
+      />
+      <MemeImageContextMenu
+        {...imageContextMenuProps}
+        menuContainerProps={{ className: PREVENT_DESELECT_CLASS }}
+      />
+      <ToolbarRoot className={PREVENT_DESELECT_CLASS} />
       <AdjustableView
         contentWidth={width}
         contentHeight={height}
         zoom={zoom}
         onZoom={z => dispatch(setZoom(z))}
       >
-        <TransformControlsRoot ref={transformControlsRootRef} />
+        <TransformControlsRoot className={PREVENT_DESELECT_CLASS} />
         <MemeContainer
           {...longPressHandlers}
           style={{
             width,
             height,
-          }}
-          onClick={evt => {
-            // Deselect any active element if clicking on the canvas background
-            if (evt.target === evt.currentTarget) {
-              dispatch(setActiveElementId(null))
-            }
           }}
           onContextMenu={evt => {
             evt.preventDefault()
@@ -122,6 +121,9 @@ export const MemeCanvas = (): JSX.Element => {
         >
           {meme.images.map(image => (
             <MemeCanvasImage key={image.id} image={image} snapBoundaries={snapBoundaries} />
+          ))}
+          {meme.text.map(text => (
+            <MemeCanvasText key={text.id} text={text} snapBoundaries={snapBoundaries} />
           ))}
         </MemeContainer>
       </AdjustableView>

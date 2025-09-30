@@ -4,4 +4,4 @@
  */
 
 export { makeMemeSlice } from "./model/makeMemeSlice"
-export type { MemeImage, MemeState } from "./model/makeMemeSlice"
+export type { MemeImage, MemeText, MemeState } from "./model/makeMemeSlice"

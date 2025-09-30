@@ -64,7 +64,7 @@ export const MemeCanvasImage = ({
         },
         onClick: () => {
           if (!hasInteracted.current) {
-            dispatch(setActiveElementId(isActive ? null : id))
+            dispatch(setActiveElementId(null))
           }
         },
       }}
@@ -77,6 +77,9 @@ export const MemeCanvasImage = ({
           width,
           height,
           zIndex: orderIndex,
+        }}
+        onClick={() => {
+          dispatch(setActiveElementId(id))
         }}
       />
     </TransformControls>

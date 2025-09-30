@@ -24,6 +24,7 @@ export interface SelectionBoxRegionProps {
 const Region = styled.div<{ $active: boolean; $allowMove: boolean }>`
   position: absolute;
   cursor: ${props => (props.$active && props.$allowMove ? "move" : "auto")};
+  pointer-events: ${props => (props.$allowMove ? "auto" : "none")};
   z-index: ${props => (props.$active ? `99999` : `var(--z-index)`)};
   box-shadow:
     0 0 0 calc(var(--scale) * 1) var(--transform-region-border-color, white),
@@ -46,7 +47,7 @@ export const SelectionBoxRegion = ({
   onDrag,
   onDragStart,
   children,
-}: SelectionBoxRegionProps): JSX.Element => {
+}: SelectionBoxRegionProps): JSX.Element | null => {
   const hasDragged = useRef(false)
   const selectionBox = useRef<HTMLDivElement>(null)
 
@@ -67,6 +68,7 @@ export const SelectionBoxRegion = ({
     },
   })
 
+  if (!active) return null
   return (
     <Region
       {...selectionBoxProps}
@@ -86,18 +88,18 @@ export const SelectionBoxRegion = ({
       $allowMove={allowMove}
       onMouseDown={evt => {
         selectionBoxProps.onMouseDown?.(evt)
-        if (active && evt.target === evt.currentTarget && evt.button === 0) {
+        if (allowMove && evt.target === evt.currentTarget && evt.button === 0) {
           startDrag(evt)
         }
       }}
       onTouchStart={evt => {
         selectionBoxProps.onTouchStart?.(evt)
-        if (active && evt.target === evt.currentTarget) {
+        if (allowMove && evt.target === evt.currentTarget) {
           startDrag(evt)
         }
       }}
     >
-      {active && children}
+      {children}
     </Region>
   )
 }

@@ -22,7 +22,7 @@ export const MenuItem = styled.button<MenuItemProps>`
   ${props =>
     props.$danger &&
     `
-    color: var(--context-danger-color);
+    color: var(--context-color-danger);
   `}
 
   &:hover:not(:disabled) {
@@ -32,8 +32,8 @@ export const MenuItem = styled.button<MenuItemProps>`
     ${props =>
       props.$danger &&
       `
-      background: var(--context-danger-color);
-      color: var(--on-context-danger-color);
+      background: var(--context-color-danger);
+      color: var(--on-context-color-danger);
     `}
   }
 `

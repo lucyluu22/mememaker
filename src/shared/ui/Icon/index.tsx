@@ -1,6 +1,7 @@
 import styled from "styled-components"
 
 export const Icon = styled.span`
+  appearance: none;
   display: inline-block;
   vertical-align: middle;
   font-size: 1.5rem;

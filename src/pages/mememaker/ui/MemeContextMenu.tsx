@@ -3,7 +3,7 @@ import { BiClipboard, BiImageAlt, BiText, BiExport } from "react-icons/bi"
 import { useAppDispatch } from "src/app/hooks"
 
 import { setActiveElementId } from "../model/memeCanvasSlice"
-import { addImage } from "../model/memeSlice"
+import { addImage, addText } from "../model/memeSlice"
 
 import type { MenuProps } from "src/shared/ui/ContextMenu"
 import {
@@ -28,6 +28,15 @@ export const MemeContextMenu = (contextMenuProps: MenuProps): JSX.Element => {
     })
     dispatch(addImageAction)
     dispatch(setActiveElementId(addImageAction.payload.id))
+    contextMenuProps.onClose()
+  }
+
+  const onAddText = () => {
+    // Default text content
+    const defaultHtml = "<p>New Text</p>"
+    const addTextAction = addText({ html: defaultHtml })
+    dispatch(addTextAction)
+    dispatch(setActiveElementId(addTextAction.payload.id))
     contextMenuProps.onClose()
   }
 
@@ -63,7 +72,7 @@ export const MemeContextMenu = (contextMenuProps: MenuProps): JSX.Element => {
           style={{ display: "none" }}
         />
       </MenuItem>
-      <MenuItem>
+      <MenuItem onClick={onAddText}>
         <MenuIcon>
           <BiText />
         </MenuIcon>

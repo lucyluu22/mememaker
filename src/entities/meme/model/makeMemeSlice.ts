@@ -8,26 +8,30 @@
  */
 
 import { createSlice, createSelector, nanoid } from "@reduxjs/toolkit"
+import { remove } from "lodash"
+import type { TransformableElement } from "src/shared/ui/TransformControls"
 
-export interface MemeImage {
+export interface MemeImage extends TransformableElement {
   id: string // unique identifier
   url: string // The image file URL
-  width: number // user scaled width
-  height: number // user scaled height
   naturalWidth: number // original image width
   naturalHeight: number // original image height
-  x: number // x position on the meme canvas
-  y: number // y position on the meme canvas
 }
 
+export interface MemeText extends TransformableElement {
+  id: string // unique identifier
+  html: string // HTML content of the text
+}
 export interface MemeState {
   order: string[]
   images: MemeImage[]
+  text: MemeText[]
 }
 
 export const initialState: MemeState = {
   order: [],
   images: [],
+  text: [],
 }
 
 export const makeMemeSlice = <Name extends string = "meme">(name: Name = "meme" as Name) =>
@@ -73,6 +77,32 @@ export const makeMemeSlice = <Name extends string = "meme">(name: Name = "meme" 
         if (index !== -1) {
           state.images[index] = { ...state.images[index], ...action.payload }
         }
+      }),
+      addText: create.preparedReducer(
+        ({
+          id = nanoid(),
+          html,
+          x = 0,
+          y = 0,
+          width = 200,
+          height = 50,
+        }: RequireOnly<MemeText, "html">) => {
+          return { payload: { id, html, x, y, width, height } }
+        },
+        (state, action) => {
+          state.text.push(action.payload)
+          state.order.push(action.payload.id)
+        },
+      ),
+      updateText: create.reducer((state, action: { payload: RequireOnly<MemeText, "id"> }) => {
+        const index = state.text.findIndex(t => t.id === action.payload.id)
+        if (index !== -1) {
+          state.text[index] = { ...state.text[index], ...action.payload }
+        }
+      }),
+      removeText: create.reducer((state, action: { payload: string }) => {
+        state.text = state.text.filter(text => text.id !== action.payload)
+        state.order.splice(state.order.indexOf(action.payload), 1)
       }),
       updateOrder: create.reducer((state, action: { payload: { id: string; index?: number } }) => {
         const { id, index } = action.payload

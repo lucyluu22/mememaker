@@ -1,10 +1,11 @@
 import type { JSX, PropsWithChildren } from "react"
-import clamp from "lodash/clamp"
-import { useRef, useState, useEffect, useLayoutEffect } from "react"
+import { useRef, useEffect } from "react"
 import styled, { keyframes } from "styled-components"
 
+import { useBoundedCoordinates } from "../useBoundedCoordinates"
+
 const slideIn = keyframes`
-    from {
+  from {
     opacity: 0;
     transform: scale3d(1, 0.3, 1);
   }
@@ -30,6 +31,7 @@ export interface MenuProps<Context = undefined> {
   x: number
   y: number
   context?: Context
+  menuContainerProps?: React.HTMLAttributes<HTMLDivElement>
   onClose: () => void
 }
 
@@ -54,21 +56,22 @@ export const Menu = ({
   open,
   x,
   y,
+  menuContainerProps,
   onClose,
   children,
 }: PropsWithChildren<MenuProps>): JSX.Element | null => {
   const menuRef = useRef<HTMLDivElement>(null)
-  const [menuWidth, setMenuWidth] = useState<number>(0)
-  const [menuHeight, setMenuHeight] = useState<number>(0)
 
-  // Measure menu dimensions when it opens
-  useLayoutEffect(() => {
-    if (open && menuRef.current) {
-      menuRef.current.style.display = ""
-      setMenuWidth(menuRef.current.offsetWidth)
-      setMenuHeight(menuRef.current.offsetHeight)
-    }
-  }, [open])
+  if (open && menuRef.current?.style.display === "none") {
+    menuRef.current.style.display = ""
+  }
+
+  const { x: boundX, y: boundY } = useBoundedCoordinates({
+    x,
+    y,
+    boundedElement: menuRef,
+    recalcDeps: [open],
+  })
 
   // Handle close on outside interaction
   useEffect(() => {
@@ -87,10 +90,6 @@ export const Menu = ({
     }
   }, [open, onClose])
 
-  // Bound x and y pos so the menu is always fully visible
-  const boundX = clamp(x, 0, window.innerWidth - menuWidth)
-  const boundY = clamp(y, 0, window.innerHeight - menuHeight)
-
   return (
     <MenuContainer
       $open={open}
@@ -99,6 +98,7 @@ export const Menu = ({
       tabIndex={-1}
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       onAnimationEnd={() => !open && (menuRef.current!.style.display = "none")}
+      {...menuContainerProps}
     >
       {children}
     </MenuContainer>
