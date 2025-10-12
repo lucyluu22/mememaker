@@ -1,18 +1,25 @@
 import type { JSX } from "react"
-import { BiClipboard, BiImageAlt, BiText, BiExport } from "react-icons/bi"
-import { useAppDispatch } from "src/app/hooks"
+import { BiClipboard, BiImageAlt, BiText, BiExport, BiCopy } from "react-icons/bi"
+import { useAppDispatch, useAppSelector } from "src/app/hooks"
 
 import { setActiveElementId } from "../../model/memeCanvasSlice"
-import { addImage, addText } from "../../model/memeSlice"
+import {
+  addImage,
+  addText,
+  selectMemeBackgroundColor,
+  updateBackgroundColor,
+} from "../../model/memeSlice"
 
 import type { MenuProps } from "src/shared/ui/ContextMenu"
 import { Menu, MenuHeader, MenuItem, Separator, useContextMenu } from "src/shared/ui/ContextMenu"
 import { Icon } from "src/shared/ui/Icon"
+import { ColorInput } from "src/shared/ui/Inputs"
 
 export const useMemeContextMenu = useContextMenu
 
 export const MemeContextMenu = (contextMenuProps: MenuProps): JSX.Element => {
   const dispatch = useAppDispatch()
+  const backgroundColor = useAppSelector(selectMemeBackgroundColor)
 
   const onAddImage = (url: string, naturalWidth: number, naturalHeight: number) => {
     const addImageAction = addImage({
@@ -35,12 +42,6 @@ export const MemeContextMenu = (contextMenuProps: MenuProps): JSX.Element => {
   return (
     <Menu {...contextMenuProps}>
       <MenuHeader>Meme</MenuHeader>
-      <MenuItem>
-        <Icon>
-          <BiClipboard />
-        </Icon>
-        Paste
-      </MenuItem>
       <MenuItem as="label">
         <Icon>
           <BiImageAlt />
@@ -70,12 +71,31 @@ export const MemeContextMenu = (contextMenuProps: MenuProps): JSX.Element => {
         </Icon>
         Add Text
       </MenuItem>
+      <MenuItem>
+        <Icon>
+          <BiClipboard />
+        </Icon>
+        Paste
+      </MenuItem>
+      <MenuItem as="div">
+        <ColorInput
+          label="Background Color"
+          color={backgroundColor}
+          onChange={color => dispatch(updateBackgroundColor(color))}
+        />
+      </MenuItem>
       <Separator />
+      <MenuItem>
+        <Icon>
+          <BiCopy />
+        </Icon>
+        Copy to Clipboard
+      </MenuItem>
       <MenuItem>
         <Icon>
           <BiExport />
         </Icon>
-        Export To Image
+        Save As
       </MenuItem>
     </Menu>
   )

@@ -105,6 +105,7 @@ export const MemeCanvas = (): JSX.Element => {
             style={{
               width,
               height,
+              background: meme.backgroundColor,
             }}
           >
             {meme.images.map(image => (

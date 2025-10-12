@@ -27,12 +27,14 @@ export interface MemeText extends TransformableElement {
 }
 
 export interface MemeState {
+  backgroundColor: string
   order: string[]
   images: MemeImage[]
   texts: MemeText[]
 }
 
 export const initialState: MemeState = {
+  backgroundColor: "#ffffff",
   order: [],
   images: [],
   texts: [],
@@ -43,6 +45,9 @@ export const makeMemeSlice = <Name extends string = "meme">(name: Name = "meme" 
     name,
     initialState,
     reducers: create => ({
+      updateBackgroundColor: create.reducer((state, action: { payload: string }) => {
+        state.backgroundColor = action.payload
+      }),
       addImage: create.preparedReducer(
         ({
           id = nanoid(),
@@ -118,6 +123,7 @@ export const makeMemeSlice = <Name extends string = "meme">(name: Name = "meme" 
     }),
     selectors: {
       selectMeme: state => state,
+      selectMemeBackgroundColor: state => state.backgroundColor,
       selectImageById: createSelector(
         (state: MemeState) => state.images,
         (_: MemeState, id: string) => id,
