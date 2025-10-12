@@ -18,6 +18,7 @@ export interface MemeImage extends TransformableElement {
   url: string // The image file URL
   naturalWidth: number // original image width
   naturalHeight: number // original image height
+  opacity: number // image opacity between 0 and 1
 }
 
 export interface MemeText extends TransformableElement {
@@ -56,6 +57,7 @@ export const makeMemeSlice = <Name extends string = "meme">(name: Name = "meme" 
           naturalHeight,
           width = naturalWidth,
           height = naturalHeight,
+          opacity = 1,
           x = 0,
           y = 0,
         }: RequireOnly<MemeImage, "url" | "naturalWidth" | "naturalHeight">) => {
@@ -67,6 +69,7 @@ export const makeMemeSlice = <Name extends string = "meme">(name: Name = "meme" 
               naturalHeight,
               width,
               height,
+              opacity,
               x,
               y,
             },
@@ -127,12 +130,12 @@ export const makeMemeSlice = <Name extends string = "meme">(name: Name = "meme" 
       selectImageById: createSelector(
         (state: MemeState) => state.images,
         (_: MemeState, id: string) => id,
-        (images, id) => images.find(img => img.id === id) ?? null,
+        (images, id) => images.find(img => img.id === id),
       ),
       selectTextsById: createSelector(
         (state: MemeState) => state.texts,
         (_: MemeState, id: string) => id,
-        (texts, id) => texts.find(text => text.id === id) ?? null,
+        (texts, id) => texts.find(text => text.id === id),
       ),
       selectOrderIndexById: createSelector(
         (state: MemeState) => state.order,

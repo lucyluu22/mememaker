@@ -30,7 +30,7 @@ export interface MemeCanvasImageProps {
 
 export const MemeCanvasImage = ({
   snapBoundaries,
-  image: { id, url, x, y, width, height, naturalWidth, naturalHeight },
+  image: { id, url, x, y, width, height, naturalWidth, naturalHeight, opacity },
 }: MemeCanvasImageProps): JSX.Element => {
   const hasInteracted = useRef(false)
 
@@ -89,6 +89,7 @@ export const MemeCanvasImage = ({
             left: x,
             width,
             height,
+            opacity,
             zIndex: orderIndex,
           }}
           onClick={() => {
