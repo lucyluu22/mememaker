@@ -2,8 +2,8 @@
 
 import type { JSX } from "react"
 import { styled } from "styled-components"
-import { Icon } from "../Icon"
 import { InputGroup } from "./InputGroup"
+import { Button } from "./Button"
 
 export interface ToggleButtonProps {
   checked: boolean
@@ -12,18 +12,7 @@ export interface ToggleButtonProps {
   children: React.ReactNode
 }
 
-const CheckboxLabel = styled(Icon).attrs({ as: "label" })`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: var(--input-height);
-  width: var(--input-height);
-  background: var(--primary-color);
-  padding: 0;
-  border: 1px solid var(--primary-color-border);
-  border-radius: var(--border-radius);
-  cursor: pointer;
-
+const CheckboxLabel = styled(Button).attrs({ as: "label" })`
   &:has(input[type="checkbox"]:checked) {
     background: var(--secondary-color);
     color: var(--on-secondary-color);

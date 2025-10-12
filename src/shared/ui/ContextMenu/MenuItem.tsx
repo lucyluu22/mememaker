@@ -6,17 +6,17 @@ export interface MenuItemProps extends React.ButtonHTMLAttributes<HTMLButtonElem
 }
 
 export const MenuItem = styled.button<MenuItemProps>`
-  display: block;
-  flex: 1;
-  padding: var(--button-padding);
+  display: flex;
+  gap: calc(var(--spacing-unit) * 2);
+  align-items: center;
+  padding: var(--input-padding);
   background: none;
   border: none;
   border-radius: var(--border-radius);
-  text-align: left;
+  font-size: 1rem;
   color: inherit;
   cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
   opacity: ${({ disabled }) => (disabled ? 0.5 : 1)};
-  font: inherit;
   white-space: nowrap;
 
   ${props =>
@@ -25,7 +25,7 @@ export const MenuItem = styled.button<MenuItemProps>`
     color: var(--context-color-danger);
   `}
 
-  &:hover:not(:disabled) {
+  &:is(button, label):hover:not(:disabled) {
     background: var(--secondary-color);
     color: var(--on-secondary-color);
 

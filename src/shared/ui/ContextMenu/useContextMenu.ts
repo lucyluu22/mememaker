@@ -1,19 +1,11 @@
-import type { MouseEvent, TouchEvent } from "react"
-import { useCallback, useState } from "react"
-import type { MenuProps } from "./Menu"
+import { useCallback, useState, useRef } from "react"
+import type { MenuProps, OpenDirection } from "./Menu"
 
-export type ContextMenuOpenHandlerParams<Context = undefined> = Context extends undefined
-  ? {
-      event: MouseEvent | TouchEvent
-    }
-  : {
-      event: MouseEvent | TouchEvent
-      context: Context
-    }
+export type ContextMenuOpenOptions =
+  | { x: number; y: number; parentElement?: undefined; openFrom?: OpenDirection }
+  | { parentElement: HTMLElement; x?: undefined; y?: undefined; openFrom?: OpenDirection }
 
-export type ContextMenuOpenHandler<Context = undefined> = (
-  args: ContextMenuOpenHandlerParams<Context>,
-) => void
+export type ContextMenuOpenHandler = (options: ContextMenuOpenOptions) => void
 
 export type ContextMenuCloseHandler = () => void
 
@@ -21,33 +13,36 @@ export interface UseContextMenuOptions {
   contextMenuProps?: Partial<MenuProps>
 }
 
-export type UseContextMenuReturn<Context = undefined> = [
-  ContextMenuOpenHandler<Context>,
-  ContextMenuCloseHandler,
-  MenuProps<Context>,
-]
+export type UseContextMenuReturn = [ContextMenuOpenHandler, ContextMenuCloseHandler, MenuProps]
 
-export const useContextMenu = <Context = undefined>({
+export const useContextMenu = ({
   contextMenuProps,
-}: UseContextMenuOptions = {}): UseContextMenuReturn<Context> => {
+}: UseContextMenuOptions = {}): UseContextMenuReturn => {
   const [openState, setOpenState] = useState<boolean>(false)
   const [x, setX] = useState<number>(0)
   const [y, setY] = useState<number>(0)
-  const [currentContext, setCurrentContext] = useState<Context>()
+  const [openFrom, setOpenFrom] = useState<OpenDirection>("top")
+  const parentElementRef = useRef<HTMLElement | null>(null)
 
   return [
-    contextMenuOpenParams => {
-      const { event } = contextMenuOpenParams
-      if ("clientX" in event && "clientY" in event) {
-        setX(event.clientX)
-        setY(event.clientY)
-      } else if ("touches" in event) {
-        setX(event.touches[0].clientX)
-        setY(event.touches[0].clientY)
+    options => {
+      if (options.parentElement) {
+        parentElementRef.current = options.parentElement
+        const rect = options.parentElement.getBoundingClientRect()
+        setX(rect.left)
+        if (options.openFrom === "bottom") {
+          setY(rect.top)
+        } else {
+          setY(rect.bottom)
+        }
+      } else {
+        parentElementRef.current = null
+        setX(options.x)
+        setY(options.y)
       }
 
-      if ("context" in contextMenuOpenParams) {
-        setCurrentContext(contextMenuOpenParams.context)
+      if (options.openFrom) {
+        setOpenFrom(options.openFrom)
       }
 
       setOpenState(true)
@@ -56,13 +51,17 @@ export const useContextMenu = <Context = undefined>({
       setOpenState(false)
     },
     {
-      onClose: useCallback(() => {
+      onClose: useCallback(evt => {
+        if (evt && parentElementRef.current) {
+          // ignore clicks on the parent element that opened the menu
+          if (parentElementRef.current.contains(evt.target as Node)) return
+        }
         setOpenState(false)
       }, []),
       open: openState,
       x,
       y,
-      context: currentContext,
+      openFrom,
       ...contextMenuProps,
     },
   ]

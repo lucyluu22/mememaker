@@ -1,17 +1,18 @@
 import type { JSX, PropsWithChildren } from "react"
 import { flow, clamp } from "lodash/fp"
+import { identity } from "lodash"
 import ReactDOM from "react-dom"
 import { useRef } from "react"
 
-import type { PointDelta } from "./useDragAction"
-import type { SelectionBoxAnchor } from "./SelectionBoxHandle"
+import type { PointDelta } from "./useDragIntent"
 import { TRANSFORM_CONTROLS_ROOT_ID } from "./TransformControlsRoot"
-import { SelectionBoxRegion } from "./SelectionBoxRegion"
-import { SelectionBoxHandle } from "./SelectionBoxHandle"
+import { SelectionRegion } from "./SelectionRegion"
+import { type Anchor, AnchorHandle } from "./AnchorHandle"
+import { MoveHandle } from "./MoveHandle"
+import { useDragIntent } from "./useDragIntent"
 
 import type { SnapBoundaries } from "./helpers"
 import { snapTo } from "./helpers"
-import { identity } from "lodash"
 
 export interface TransformControlProps {
   active?: boolean // render the selection box UI on the target element
@@ -31,11 +32,13 @@ export interface TransformControlProps {
   snapBoundaries?: SnapBoundaries // array of ASCENDING ORDER x and y positions to snap to
   snapThreshold?: number // the margin by which the position/dimensions should snap to the given boundaries
   ratio?: number // width/height ratio to snap to
+  hasMoveHandle?: boolean // use a separate move handle (otherwise the whole box is draggable)
   allowMove?: boolean // allow user to move the element
   allowResizeWidth?: boolean // allow user to resize element width
   allowResizeHeight?: boolean // allow user to resize element height
   zIndex?: number // z-index of the selection box region
-  selectionBoxProps?: React.HTMLAttributes<HTMLDivElement>
+  selectionRegionProps?: Partial<React.ComponentProps<typeof SelectionRegion>>
+  moveHandleProps?: Partial<React.ComponentProps<typeof MoveHandle>>
   onMove: (x: number, y: number) => void
   onResize: (width: number, height: number) => void
   onDeselect?: () => void
@@ -59,11 +62,13 @@ export const TransformControls = ({
   snapBoundaries = { x: [], y: [] },
   ratio,
   snapThreshold = 10,
+  hasMoveHandle = false,
   allowMove = true,
   allowResizeWidth = true,
   allowResizeHeight = true,
   zIndex = 0,
-  selectionBoxProps = {},
+  selectionRegionProps = {},
+  moveHandleProps = {},
   onMove,
   onResize,
   children,
@@ -76,32 +81,34 @@ export const TransformControls = ({
 
   const snapToThreshold = snapTo(snapThreshold * scale)
 
-  const onRegionDragStart = () => {
-    rawX.current = x
-    rawY.current = y
-  }
+  const dragMoveHandlers = useDragIntent({
+    transform: flow(({ dX, dY }) => ({ dX: dX * scale, dY: dY * scale })),
+    onDrag: ({ dX, dY }: PointDelta) => {
+      rawX.current += dX
+      rawY.current += dY
 
-  // Moving the selection box.
-  const onRegionDrag = ({ dX, dY }: PointDelta) => {
-    rawX.current += dX
-    rawY.current += dY
+      const newX = flow(
+        snapToThreshold(snapBoundaries.x)([0, width / 2, width]),
+        clamp(minX)(maxX - width),
+      )(rawX.current)
 
-    const newX = flow(
-      snapToThreshold(snapBoundaries.x)([0, width / 2, width]),
-      clamp(minX)(maxX - width),
-    )(rawX.current)
+      const newY = flow(
+        snapToThreshold(snapBoundaries.y)([0, height / 2, height]),
+        clamp(minY)(maxY - height),
+      )(rawY.current)
 
-    const newY = flow(
-      snapToThreshold(snapBoundaries.y)([0, height / 2, height]),
-      clamp(minY)(maxY - height),
-    )(rawY.current)
+      if (newX !== x || newY !== y) {
+        onMove(newX, newY)
+      }
+    },
+    onDragStart: evt => {
+      if (!active || evt.button !== 0) return false
+      rawX.current = x
+      rawY.current = y
+    },
+  })
 
-    if (newX !== x || newY !== y) {
-      onMove(newX, newY)
-    }
-  }
-
-  const onHandleDragStart = () => {
+  const onAnchorDragStart = () => {
     rawX.current = x
     rawY.current = y
     rawW.current = width
@@ -109,7 +116,7 @@ export const TransformControls = ({
   }
 
   // Resizing the selection box.
-  const onHandleDrag = ({ dX, dY, anchor }: PointDelta & { anchor: SelectionBoxAnchor }) => {
+  const onAnchorDrag = ({ dX, dY, anchor }: PointDelta & { anchor: Anchor }) => {
     // Origin is top-left of selection box.
     // Resizing from the right and bottom work as expected.
     // However, left and top need to also move the selection to remain fixed while the size changes.
@@ -170,8 +177,8 @@ export const TransformControls = ({
     if (newW !== width || newH !== height) onResize(newW, newH)
   }
 
-  const getHandleAnchors = (): SelectionBoxAnchor[] => {
-    const anchors: SelectionBoxAnchor[] = []
+  const getAnchorHandles = (): Anchor[] => {
+    const anchors: Anchor[] = []
 
     if (allowResizeWidth) {
       anchors.push({ right: true }, { left: true })
@@ -181,10 +188,13 @@ export const TransformControls = ({
     }
     if (allowResizeWidth && allowResizeHeight) {
       anchors.push(
-        { top: true, left: true },
-        { top: true, right: true },
-        { bottom: true, right: true },
-        { bottom: true, left: true },
+        ...[
+          // The move handle replaces the top-left anchor.
+          ...(hasMoveHandle ? [] : [{ top: true, left: true }]),
+          { top: true, right: true },
+          { bottom: true, right: true },
+          { bottom: true, left: true },
+        ],
       )
     }
 
@@ -194,7 +204,7 @@ export const TransformControls = ({
   return (
     <>
       {ReactDOM.createPortal(
-        <SelectionBoxRegion
+        <SelectionRegion
           active={active}
           x={x}
           y={y}
@@ -203,23 +213,24 @@ export const TransformControls = ({
           scale={scale}
           allowMove={allowMove}
           zIndex={zIndex}
-          onDrag={onRegionDrag}
-          onDragStart={onRegionDragStart}
-          selectionBoxProps={selectionBoxProps}
+          {...selectionRegionProps}
         >
-          {getHandleAnchors().map(anchor => (
-            <SelectionBoxHandle
+          {getAnchorHandles().map(anchor => (
+            <AnchorHandle
               key={Object.keys(anchor).join("-")}
               {...anchor}
               scale={scale}
-              onDrag={onHandleDrag}
-              onDragStart={onHandleDragStart}
+              onDrag={onAnchorDrag}
+              onDragStart={onAnchorDragStart}
             />
           ))}
-        </SelectionBoxRegion>,
+          {hasMoveHandle && (
+            <MoveHandle $top $left $scale={scale} {...dragMoveHandlers} {...moveHandleProps} />
+          )}
+        </SelectionRegion>,
         document.getElementById(TRANSFORM_CONTROLS_ROOT_ID) ?? document.body,
       )}
-      {children}
+      <div {...(!hasMoveHandle ? dragMoveHandlers : {})}>{children}</div>
     </>
   )
 }

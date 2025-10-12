@@ -1,7 +1,6 @@
 import styled from "styled-components"
 
 export const Input = styled.input`
-  height: var(--input-height);
   font-size: 1rem;
   padding: var(--input-padding);
   border-radius: var(--border-radius);

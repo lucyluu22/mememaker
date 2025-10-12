@@ -8,8 +8,10 @@
  */
 
 import { createSlice, createSelector, nanoid } from "@reduxjs/toolkit"
-import { remove } from "lodash"
+import type { TextValue } from "src/shared/ui/TextEditor"
 import type { TransformableElement } from "src/shared/ui/TransformControls"
+
+import { getDefaultTextValue } from "src/shared/ui/TextEditor"
 
 export interface MemeImage extends TransformableElement {
   id: string // unique identifier
@@ -20,18 +22,20 @@ export interface MemeImage extends TransformableElement {
 
 export interface MemeText extends TransformableElement {
   id: string // unique identifier
-  html: string // HTML content of the text
+  textEditorValue: TextValue
+  backgroundColor: string
 }
+
 export interface MemeState {
   order: string[]
   images: MemeImage[]
-  text: MemeText[]
+  texts: MemeText[]
 }
 
 export const initialState: MemeState = {
   order: [],
   images: [],
-  text: [],
+  texts: [],
 }
 
 export const makeMemeSlice = <Name extends string = "meme">(name: Name = "meme" as Name) =>
@@ -81,27 +85,28 @@ export const makeMemeSlice = <Name extends string = "meme">(name: Name = "meme" 
       addText: create.preparedReducer(
         ({
           id = nanoid(),
-          html,
+          textEditorValue = getDefaultTextValue("Meme Text"),
           x = 0,
           y = 0,
           width = 200,
           height = 50,
-        }: RequireOnly<MemeText, "html">) => {
-          return { payload: { id, html, x, y, width, height } }
+          backgroundColor = "#ffffff00",
+        }: Partial<MemeText> = {}) => {
+          return { payload: { id, textEditorValue, x, y, width, height, backgroundColor } }
         },
         (state, action) => {
-          state.text.push(action.payload)
+          state.texts.push(action.payload)
           state.order.push(action.payload.id)
         },
       ),
       updateText: create.reducer((state, action: { payload: RequireOnly<MemeText, "id"> }) => {
-        const index = state.text.findIndex(t => t.id === action.payload.id)
+        const index = state.texts.findIndex(t => t.id === action.payload.id)
         if (index !== -1) {
-          state.text[index] = { ...state.text[index], ...action.payload }
+          state.texts[index] = { ...state.texts[index], ...action.payload }
         }
       }),
       removeText: create.reducer((state, action: { payload: string }) => {
-        state.text = state.text.filter(text => text.id !== action.payload)
+        state.texts = state.texts.filter(text => text.id !== action.payload)
         state.order.splice(state.order.indexOf(action.payload), 1)
       }),
       updateOrder: create.reducer((state, action: { payload: { id: string; index?: number } }) => {
@@ -113,11 +118,15 @@ export const makeMemeSlice = <Name extends string = "meme">(name: Name = "meme" 
     }),
     selectors: {
       selectMeme: state => state,
-      selectImages: state => state.images,
-      selectById: createSelector(
+      selectImageById: createSelector(
         (state: MemeState) => state.images,
         (_: MemeState, id: string) => id,
         (images, id) => images.find(img => img.id === id) ?? null,
+      ),
+      selectTextsById: createSelector(
+        (state: MemeState) => state.texts,
+        (_: MemeState, id: string) => id,
+        (texts, id) => texts.find(text => text.id === id) ?? null,
       ),
       selectOrderIndexById: createSelector(
         (state: MemeState) => state.order,

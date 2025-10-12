@@ -2,18 +2,12 @@ import type { JSX } from "react"
 import { BiClipboard, BiImageAlt, BiText, BiExport } from "react-icons/bi"
 import { useAppDispatch } from "src/app/hooks"
 
-import { setActiveElementId } from "../model/memeCanvasSlice"
-import { addImage, addText } from "../model/memeSlice"
+import { setActiveElementId } from "../../model/memeCanvasSlice"
+import { addImage, addText } from "../../model/memeSlice"
 
 import type { MenuProps } from "src/shared/ui/ContextMenu"
-import {
-  Menu,
-  MenuHeader,
-  MenuItem,
-  Separator,
-  MenuIcon,
-  useContextMenu,
-} from "src/shared/ui/ContextMenu"
+import { Menu, MenuHeader, MenuItem, Separator, useContextMenu } from "src/shared/ui/ContextMenu"
+import { Icon } from "src/shared/ui/Icon"
 
 export const useMemeContextMenu = useContextMenu
 
@@ -32,9 +26,7 @@ export const MemeContextMenu = (contextMenuProps: MenuProps): JSX.Element => {
   }
 
   const onAddText = () => {
-    // Default text content
-    const defaultHtml = "<p>New Text</p>"
-    const addTextAction = addText({ html: defaultHtml })
+    const addTextAction = addText()
     dispatch(addTextAction)
     dispatch(setActiveElementId(addTextAction.payload.id))
     contextMenuProps.onClose()
@@ -44,15 +36,15 @@ export const MemeContextMenu = (contextMenuProps: MenuProps): JSX.Element => {
     <Menu {...contextMenuProps}>
       <MenuHeader>Meme</MenuHeader>
       <MenuItem>
-        <MenuIcon>
+        <Icon>
           <BiClipboard />
-        </MenuIcon>
+        </Icon>
         Paste
       </MenuItem>
       <MenuItem as="label">
-        <MenuIcon>
+        <Icon>
           <BiImageAlt />
-        </MenuIcon>
+        </Icon>
         Add Image
         <input
           key={String(contextMenuProps.open)} // rerender when context menu opens
@@ -73,16 +65,16 @@ export const MemeContextMenu = (contextMenuProps: MenuProps): JSX.Element => {
         />
       </MenuItem>
       <MenuItem onClick={onAddText}>
-        <MenuIcon>
+        <Icon>
           <BiText />
-        </MenuIcon>
+        </Icon>
         Add Text
       </MenuItem>
       <Separator />
       <MenuItem>
-        <MenuIcon>
+        <Icon>
           <BiExport />
-        </MenuIcon>
+        </Icon>
         Export To Image
       </MenuItem>
     </Menu>

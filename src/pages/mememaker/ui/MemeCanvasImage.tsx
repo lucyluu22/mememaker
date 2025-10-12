@@ -5,6 +5,8 @@ import type { MemeImage } from "src/entities/meme"
 import type { SnapBoundaries } from "src/shared/ui/TransformControls"
 import { useAppSelector, useAppDispatch } from "src/app/hooks"
 import { TransformControls } from "src/shared/ui/TransformControls"
+import { Icon } from "src/shared/ui/Icon"
+import { BiImageAlt } from "react-icons/bi"
 
 import { updateImage, selectOrderIndexById } from "../model/memeSlice"
 import {
@@ -12,6 +14,10 @@ import {
   selectInverseZoomScale,
   setActiveElementId,
 } from "../model/memeCanvasSlice"
+
+import { MemeCanvasToolbar } from "./MemeCanvasToolbar"
+import { MemeImageContextMenu, useMemeImageContextMenu } from "./ContextMenu/MemeImageContextMenu"
+import { PREVENT_DESELECT_CLASS } from "./constants"
 
 const Image = styled.img`
   position: absolute;
@@ -33,6 +39,9 @@ export const MemeCanvasImage = ({
   const orderIndex = useAppSelector(state => selectOrderIndexById(state, id))
   const dispatch = useAppDispatch()
 
+  const [openImageContextMenu, closeImageContextMenu, imageContextMenuProps] =
+    useMemeImageContextMenu()
+
   const moveImageHandler = (x: number, y: number) => {
     hasInteracted.current = true
     dispatch(updateImage({ id, x, y }))
@@ -43,45 +52,60 @@ export const MemeCanvasImage = ({
   }
 
   return (
-    <TransformControls
-      active={isActive}
-      x={x}
-      y={y}
-      width={width}
-      height={height}
-      scale={inverseZoomScale}
-      snapBoundaries={snapBoundaries}
-      ratio={naturalWidth / naturalHeight}
-      zIndex={orderIndex}
-      onMove={moveImageHandler}
-      onResize={resizeImageHandler}
-      selectionBoxProps={{
-        onMouseDown: () => {
-          hasInteracted.current = false
-        },
-        onTouchStart: () => {
-          hasInteracted.current = false
-        },
-        onClick: () => {
-          if (!hasInteracted.current) {
-            dispatch(setActiveElementId(null))
-          }
-        },
-      }}
-    >
-      <Image
-        src={url}
-        style={{
-          top: y,
-          left: x,
-          width,
-          height,
-          zIndex: orderIndex,
-        }}
-        onClick={() => {
-          dispatch(setActiveElementId(id))
-        }}
+    <>
+      <MemeImageContextMenu
+        {...imageContextMenuProps}
+        imageId={id}
+        menuContainerProps={{ className: PREVENT_DESELECT_CLASS }}
       />
-    </TransformControls>
+      <MemeCanvasToolbar
+        id={id}
+        menuButton={
+          <Icon>
+            <BiImageAlt />
+          </Icon>
+        }
+        menuProps={imageContextMenuProps}
+        onOpenContextMenu={openImageContextMenu}
+        onCloseContextMenu={closeImageContextMenu}
+      />
+      <TransformControls
+        active={isActive}
+        x={x}
+        y={y}
+        width={width}
+        height={height}
+        scale={inverseZoomScale}
+        snapBoundaries={snapBoundaries}
+        ratio={naturalWidth / naturalHeight}
+        zIndex={orderIndex}
+        onMove={moveImageHandler}
+        onResize={resizeImageHandler}
+      >
+        <Image
+          src={url}
+          style={{
+            top: y,
+            left: x,
+            width,
+            height,
+            zIndex: orderIndex,
+          }}
+          onClick={() => {
+            dispatch(isActive ? setActiveElementId(null) : setActiveElementId(id))
+          }}
+          onTouchStart={evt => {
+            if (isActive) {
+              evt.stopPropagation()
+            }
+          }}
+          onContextMenu={evt => {
+            evt.preventDefault()
+            evt.stopPropagation()
+            openImageContextMenu({ x: evt.clientX, y: evt.clientY })
+          }}
+        />
+      </TransformControls>
+    </>
   )
 }

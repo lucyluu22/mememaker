@@ -1,72 +1,66 @@
-import type { JSX } from "react"
+import { useState, type JSX } from "react"
+import { useDebounce } from "react-use"
 import { BiBold, BiItalic, BiUnderline, BiStrikethrough } from "react-icons/bi"
-import { Input, ColorInput, Select, ToggleButton, InputGroup } from "../Inputs"
+import { Icon } from "../Icon"
+import { Input, Select, ToggleButton, InputGroup } from "../Inputs"
+import { availableFonts } from "./availableFonts"
 
-export interface TextEditorToolbarProps {
-  onBold: () => void
-  onItalic: () => void
-  onUnderline: () => void
-  onStrikethrough: () => void
+export interface TextEditorInputProps {
   fontFamily: string
+  fontSize: number
+  bold: boolean
+  italic: boolean
+  underline: boolean
+  strikethrough: boolean
+  onBoldChange: (bold: boolean) => void
+  onItalicChange: (italic: boolean) => void
+  onUnderlineChange: (underline: boolean) => void
+  onStrikethroughChange: (strikethrough: boolean) => void
   onFontFamilyChange: (font: string) => void
-  fontSize: string | number
-  onFontSizeChange: (size: string | number) => void
-  color: string
-  onColorChange: (color: string) => void
-  backgroundColor: string
-  onBackgroundColorChange: (color: string) => void
+  onFontSizeChange: (size: number) => void
 }
 
-const FONT_FAMILIES = [
-  "Arial",
-  "Helvetica",
-  "Times New Roman",
-  "Courier New",
-  "Georgia",
-  "Verdana",
-  "Tahoma",
-  "Trebuchet MS",
-  "Impact",
-]
-
 export const TextEditorInputs = ({
-  onBold,
-  onItalic,
-  onUnderline,
-  onStrikethrough,
   fontFamily,
-  onFontFamilyChange,
   fontSize,
+  bold,
+  italic,
+  underline,
+  strikethrough,
+  onBoldChange,
+  onItalicChange,
+  onUnderlineChange,
+  onStrikethroughChange,
+  onFontFamilyChange,
   onFontSizeChange,
-  color,
-  onColorChange,
-}: TextEditorToolbarProps): JSX.Element => {
+}: TextEditorInputProps): JSX.Element => {
+  const [currentFontSizeValue, setCurrentFontSizeValue] = useState(String(fontSize))
+  useDebounce(
+    () => {
+      if (currentFontSizeValue !== "") {
+        onFontSizeChange(Number(currentFontSizeValue))
+        setCurrentFontSizeValue(currentFontSizeValue)
+      }
+    },
+    200,
+    [currentFontSizeValue],
+  )
+
   return (
     <>
-      <InputGroup>
-        <ToggleButton labelProps={{ title: "Bold" }} onChange={onBold}>
-          <BiBold />
-        </ToggleButton>
-        <ToggleButton labelProps={{ title: "Italic" }} onChange={onItalic}>
-          <BiItalic />
-        </ToggleButton>
-        <ToggleButton labelProps={{ title: "Underline" }} onChange={onUnderline}>
-          <BiUnderline />
-        </ToggleButton>
-        <ToggleButton labelProps={{ title: "Strikethrough" }} onChange={onStrikethrough}>
-          <BiStrikethrough />
-        </ToggleButton>
-      </InputGroup>
-      <ColorInput inputProps={{ title: "Text Color" }} color={color} onChange={onColorChange} />
       <Select
         name="font-family"
         value={fontFamily}
+        title="Font Family"
+        style={{
+          width: "12rem",
+          fontFamily: fontFamily,
+        }}
         onChange={e => {
           onFontFamilyChange(e.target.value)
         }}
-        title="Font Family"
       >
-        {FONT_FAMILIES.map(f => (
+        {availableFonts.map(f => (
           <option key={f} value={f} style={{ fontFamily: f }}>
             {f}
           </option>
@@ -74,15 +68,45 @@ export const TextEditorInputs = ({
       </Select>
       <Input
         type="number"
-        name="font-size"
+        inputMode="numeric"
         min={1}
-        value={fontSize}
+        value={currentFontSizeValue}
         style={{ width: "5rem" }}
-        onChange={e => {
-          onFontSizeChange(e.target.value)
-        }}
         title="Font Size"
+        onChange={e => {
+          setCurrentFontSizeValue(e.target.value)
+        }}
       />
+      <InputGroup>
+        <ToggleButton checked={bold} labelProps={{ title: "Bold" }} onChange={onBoldChange}>
+          <Icon>
+            <BiBold />
+          </Icon>
+        </ToggleButton>
+        <ToggleButton checked={italic} labelProps={{ title: "Italic" }} onChange={onItalicChange}>
+          <Icon>
+            <BiItalic />
+          </Icon>
+        </ToggleButton>
+        <ToggleButton
+          checked={underline}
+          labelProps={{ title: "Underline" }}
+          onChange={onUnderlineChange}
+        >
+          <Icon>
+            <BiUnderline />
+          </Icon>
+        </ToggleButton>
+        <ToggleButton
+          checked={strikethrough}
+          labelProps={{ title: "Strikethrough" }}
+          onChange={onStrikethroughChange}
+        >
+          <Icon>
+            <BiStrikethrough />
+          </Icon>
+        </ToggleButton>
+      </InputGroup>
     </>
   )
 }

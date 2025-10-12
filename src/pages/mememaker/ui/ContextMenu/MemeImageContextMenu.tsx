@@ -5,20 +5,13 @@ import { BiLink, BiUnlink, BiMinusFront, BiMinusBack, BiCopy, BiTrash } from "re
 
 import type { MemeImage } from "src/entities/meme"
 import type { MenuProps } from "src/shared/ui/ContextMenu"
-import {
-  Menu,
-  MenuItem,
-  MenuIcon,
-  useContextMenu,
-  MenuHeader,
-  Separator,
-} from "src/shared/ui/ContextMenu"
+import { Menu, MenuItem, useContextMenu, MenuHeader, Separator } from "src/shared/ui/ContextMenu"
 import { Icon } from "src/shared/ui/Icon"
 
-import { setActiveElementId } from "../model/memeCanvasSlice"
-import { removeImage, updateOrder, selectById, updateImage } from "../model/memeSlice"
+import { setActiveElementId } from "../../model/memeCanvasSlice"
+import { removeImage, updateOrder, selectImageById, updateImage } from "../../model/memeSlice"
 
-export interface MemeImageContext {
+export interface MemeImageContextMenuProps extends MenuProps {
   imageId: MemeImage["id"]
 }
 
@@ -36,15 +29,13 @@ const ImageDimensionRatioButton = styled(Icon).attrs({
   cursor: pointer;
 `
 
-export const useMemeImageContextMenu = useContextMenu<MemeImageContext>
+export const useMemeImageContextMenu = useContextMenu
 
 export const MemeImageContextMenu = ({
-  context,
+  imageId,
   ...contextMenuProps
-}: MenuProps<MemeImageContext>): JSX.Element => {
-  const image = useAppSelector(state => {
-    return context?.imageId ? selectById(state, context.imageId) : null
-  })
+}: MemeImageContextMenuProps): JSX.Element => {
+  const image = useAppSelector(state => selectImageById(state, imageId))
 
   const dispatch = useAppDispatch()
 
@@ -58,25 +49,19 @@ export const MemeImageContextMenu = ({
   }
 
   const onRemove = () => {
-    if (context) {
-      dispatch(setActiveElementId(null))
-      dispatch(removeImage(context.imageId))
-      contextMenuProps.onClose()
-    }
+    dispatch(setActiveElementId(null))
+    dispatch(removeImage(imageId))
+    contextMenuProps.onClose()
   }
 
   const onSendToFront = () => {
-    if (context) {
-      dispatch(updateOrder({ id: context.imageId }))
-      contextMenuProps.onClose()
-    }
+    dispatch(updateOrder({ id: imageId }))
+    contextMenuProps.onClose()
   }
 
   const onSendToBack = () => {
-    if (context) {
-      dispatch(updateOrder({ id: context.imageId, index: 0 }))
-      contextMenuProps.onClose()
-    }
+    dispatch(updateOrder({ id: imageId, index: 0 }))
+    contextMenuProps.onClose()
   }
 
   return (
@@ -99,28 +84,28 @@ export const MemeImageContextMenu = ({
           })()}
       </MenuHeader>
       <MenuItem>
-        <MenuIcon>
+        <Icon>
           <BiCopy />
-        </MenuIcon>
+        </Icon>
         Copy
       </MenuItem>
       <MenuItem onClick={onSendToFront}>
-        <MenuIcon>
+        <Icon>
           <BiMinusFront />
-        </MenuIcon>
+        </Icon>
         Bring to Front
       </MenuItem>
       <MenuItem onClick={onSendToBack}>
-        <MenuIcon>
+        <Icon>
           <BiMinusBack />
-        </MenuIcon>
+        </Icon>
         Send to Back
       </MenuItem>
       <Separator />
       <MenuItem $danger onClick={onRemove}>
-        <MenuIcon>
+        <Icon>
           <BiTrash />
-        </MenuIcon>
+        </Icon>
         Delete
       </MenuItem>
     </Menu>

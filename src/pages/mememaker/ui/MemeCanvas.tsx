@@ -14,16 +14,22 @@ import { selectMeme } from "../model/memeSlice"
 
 import { AdjustableView } from "src/shared/ui/AdjustableView"
 import { TransformControlsRoot, getSnapBoundaries } from "src/shared/ui/TransformControls"
-import { useLongPress } from "src/shared/ui/useLongPress"
 
-import { MemeContextMenu, useMemeContextMenu } from "./MemeContextMenu"
-import { MemeImageContextMenu, useMemeImageContextMenu } from "./MemeImageContextMenu"
+import { MemeContextMenu, useMemeContextMenu } from "./ContextMenu/MemeContextMenu"
 import { MemeCanvasImage } from "./MemeCanvasImage"
 import { MemeCanvasText } from "./MemeCanvasText"
 
 import { calculateMemeDimensions } from "../helpers/calculateMemeDimensions"
 import { PREVENT_DESELECT_CLASS } from "./constants"
-import { ToolbarRoot } from "src/shared/ui/Toolbar"
+import { MemeCanvasToolbar, MemeCanvasToolbarRoot } from "./MemeCanvasToolbar"
+
+const CanvasContainer = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+`
 
 const MemeContainer = styled.div`
   position: relative;
@@ -31,29 +37,13 @@ const MemeContainer = styled.div`
 `
 
 export const MemeCanvas = (): JSX.Element => {
-  const isTouchDevice = window.matchMedia("(pointer: coarse)").matches
-
   const zoom = useAppSelector(selectZoom)
   const meme = useAppSelector(selectMeme)
 
   const activeElementId = useAppSelector(selectActiveElementId)
   const dispatch = useAppDispatch()
 
-  const [openMemeContextMenu, , memeContextMenuProps] = useMemeContextMenu()
-  const [openImageContextMenu, , imageContextMenuProps] = useMemeImageContextMenu()
-
-  const openContextMenu = (event: React.MouseEvent | React.TouchEvent) => {
-    if (activeElementId) {
-      openImageContextMenu({
-        event,
-        context: {
-          imageId: activeElementId,
-        },
-      })
-    } else {
-      openMemeContextMenu({ event })
-    }
-  }
+  const [openMemeContextMenu, closeMemeContextMenu, memeContextMenuProps] = useMemeContextMenu()
 
   useEffect(() => {
     const handleDeselect = (evt: MouseEvent) => {
@@ -71,15 +61,11 @@ export const MemeCanvas = (): JSX.Element => {
     }
   }, [dispatch])
 
-  const longPressHandlers = useLongPress({
-    onLongPress: openContextMenu,
-  })
-
   const { width, height } = calculateMemeDimensions(meme, 800, 600)
 
   // The snap boundaries should only recalculate when the active element changes.
   // That is, when the user will be moving/resizing something.
-  const memeLayers = useMemo(() => [...meme.images, ...meme.text], [meme.images, meme.text])
+  const memeLayers = useMemo(() => [...meme.images, ...meme.texts], [meme.images, meme.texts])
   const snapBoundaries = useMemo(
     () =>
       getSnapBoundaries([
@@ -91,42 +77,45 @@ export const MemeCanvas = (): JSX.Element => {
   )
 
   return (
-    <>
+    <CanvasContainer
+      onContextMenu={evt => {
+        evt.preventDefault()
+        openMemeContextMenu({ x: evt.clientX, y: evt.clientY })
+      }}
+    >
       <MemeContextMenu
         {...memeContextMenuProps}
         menuContainerProps={{ className: PREVENT_DESELECT_CLASS }}
       />
-      <MemeImageContextMenu
-        {...imageContextMenuProps}
-        menuContainerProps={{ className: PREVENT_DESELECT_CLASS }}
-      />
-      <ToolbarRoot className={PREVENT_DESELECT_CLASS} />
-      <AdjustableView
-        contentWidth={width}
-        contentHeight={height}
-        zoom={zoom}
-        onZoom={z => dispatch(setZoom(z))}
-      >
-        <TransformControlsRoot className={PREVENT_DESELECT_CLASS} />
-        <MemeContainer
-          {...longPressHandlers}
-          style={{
-            width,
-            height,
-          }}
-          onContextMenu={evt => {
-            evt.preventDefault()
-            if (!isTouchDevice) openContextMenu(evt)
-          }}
+      <MemeCanvasToolbarRoot>
+        <MemeCanvasToolbar
+          id={null}
+          menuProps={memeContextMenuProps}
+          onOpenContextMenu={openMemeContextMenu}
+          onCloseContextMenu={closeMemeContextMenu}
+        />
+        <AdjustableView
+          contentWidth={width}
+          contentHeight={height}
+          zoom={zoom}
+          onZoom={z => dispatch(setZoom(z))}
         >
-          {meme.images.map(image => (
-            <MemeCanvasImage key={image.id} image={image} snapBoundaries={snapBoundaries} />
-          ))}
-          {meme.text.map(text => (
-            <MemeCanvasText key={text.id} text={text} snapBoundaries={snapBoundaries} />
-          ))}
-        </MemeContainer>
-      </AdjustableView>
-    </>
+          <TransformControlsRoot className={PREVENT_DESELECT_CLASS} />
+          <MemeContainer
+            style={{
+              width,
+              height,
+            }}
+          >
+            {meme.images.map(image => (
+              <MemeCanvasImage key={image.id} image={image} snapBoundaries={snapBoundaries} />
+            ))}
+            {meme.texts.map(text => (
+              <MemeCanvasText key={text.id} text={text} snapBoundaries={snapBoundaries} />
+            ))}
+          </MemeContainer>
+        </AdjustableView>
+      </MemeCanvasToolbarRoot>
+    </CanvasContainer>
   )
 }

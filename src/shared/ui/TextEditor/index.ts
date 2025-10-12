@@ -1,5 +1,6 @@
 export type { TextEditorProps } from "./TextEditor"
-export type { TextEditorToolbarProps } from "./TextEditorInputs"
+export type { TextEditorInputProps } from "./TextEditorInputs"
 
+export { type TextValue, getDefaultTextValue } from "./helpers"
 export { TextEditor } from "./TextEditor"
 export { TextEditorInputs } from "./TextEditorInputs"

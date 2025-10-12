@@ -5,6 +5,7 @@ import { useLayoutEffect, useState } from "react"
 export interface UseBoundedCoordinatesInput {
   x: number
   y: number
+  origin?: "top" | "bottom"
   boundedElement: RefObject<HTMLElement | null>
   bounds?: { left: number; right: number; top: number; bottom: number }
   recalcDeps?: React.DependencyList
@@ -21,6 +22,7 @@ export interface UseBoundedCoordinatesOutput {
 export const useBoundedCoordinates = ({
   x,
   y,
+  origin = "top",
   boundedElement,
   bounds = { left: 0, right: window.innerWidth, top: 0, bottom: window.innerHeight },
   recalcDeps = [],
@@ -36,7 +38,16 @@ export const useBoundedCoordinates = ({
   }, [boundedElement.current, ...recalcDeps]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const boundX = clamp(x, bounds.left, bounds.right - elemWidth)
-  const boundY = clamp(y, bounds.top, bounds.bottom - elemHeight)
+
+  let boundY
+  switch (origin) {
+    case "top":
+      boundY = clamp(y, bounds.top, bounds.bottom - elemHeight)
+      break
+    case "bottom":
+      boundY = clamp(y - elemHeight, bounds.top, bounds.bottom)
+      break
+  }
 
   return { x: boundX, y: boundY }
 }

@@ -1,15 +1,16 @@
-import { useRef, useState, type JSX } from "react"
+import { type JSX } from "react"
 import styled from "styled-components"
 
 import type { MemeText } from "src/entities/meme"
 import type { SnapBoundaries } from "src/shared/ui/TransformControls"
 import { useAppSelector, useAppDispatch } from "src/app/hooks"
 
-import { BiMove } from "react-icons/bi"
 import { TransformControls } from "src/shared/ui/TransformControls"
-import { TextEditor, TextEditorInputs } from "src/shared/ui/TextEditor"
-import { Toolbar } from "src/shared/ui/Toolbar"
-import { ToggleButton } from "src/shared/ui/Inputs"
+import { TextEditor, TextEditorInputs, type TextValue } from "src/shared/ui/TextEditor"
+import { Icon } from "src/shared/ui/Icon"
+import { BiText } from "react-icons/bi"
+import { MemeCanvasToolbar } from "./MemeCanvasToolbar"
+import { MemeTextContextMenu, useMemeTextContextMenu } from "./ContextMenu/MemeTextContextMenu"
 
 import { updateText, selectOrderIndexById } from "../model/memeSlice"
 import {
@@ -17,6 +18,8 @@ import {
   selectInverseZoomScale,
   setActiveElementId,
 } from "../model/memeCanvasSlice"
+
+import { PREVENT_DESELECT_CLASS } from "./constants"
 
 const MemeTextEditor = styled(TextEditor)`
   position: absolute;
@@ -26,6 +29,7 @@ const MemeTextEditor = styled(TextEditor)`
   flex-direction: column;
   justify-content: center;
   text-align: center;
+  overflow: hidden;
 `
 
 export interface MemeCanvasTextProps {
@@ -35,53 +39,70 @@ export interface MemeCanvasTextProps {
 
 export const MemeCanvasText = ({
   snapBoundaries,
-  text: { id, html, x, y, width, height },
+  text: { id, textEditorValue, x, y, width, height, backgroundColor },
 }: MemeCanvasTextProps): JSX.Element => {
-  const hasInteracted = useRef(false)
-
   const isActive = useAppSelector(state => selectIsActiveElement(state, id))
   const inverseZoomScale = useAppSelector(selectInverseZoomScale)
   const orderIndex = useAppSelector(state => selectOrderIndexById(state, id))
   const dispatch = useAppDispatch()
 
-  const [isMoving, setIsMoving] = useState(false)
+  const [openTextContextMenu, closeTextContextMenu, textContextMenuProps] = useMemeTextContextMenu()
 
   const moveTextHandler = (x: number, y: number) => {
-    hasInteracted.current = true
     dispatch(updateText({ id, x, y }))
   }
   const resizeTextHandler = (width: number, height: number) => {
-    hasInteracted.current = true
     dispatch(updateText({ id, width, height }))
   }
-  const handleChange = (newHtml: string) => {
-    dispatch(updateText({ id, html: newHtml }))
+  const handleTextChange = (newTextEditorValue: TextValue) => {
+    dispatch(updateText({ id, textEditorValue: newTextEditorValue }))
   }
 
   return (
     <>
-      {isActive && (
-        <Toolbar
-          toolbarProps={{
-            onTouchStart: evt => {
-              // Yucky but React will propagate this to the parent component and enable panning on the canvas
-              // So we have to break encapsulation a bit here
-              evt.stopPropagation()
-            },
+      <MemeTextContextMenu
+        {...textContextMenuProps}
+        textId={id}
+        menuContainerProps={{ className: PREVENT_DESELECT_CLASS }}
+      />
+      <MemeCanvasToolbar
+        id={id}
+        menuButton={
+          <Icon>
+            <BiText />
+          </Icon>
+        }
+        menuProps={textContextMenuProps}
+        onOpenContextMenu={openTextContextMenu}
+        onCloseContextMenu={closeTextContextMenu}
+      >
+        <TextEditorInputs
+          bold={textEditorValue.bold}
+          italic={textEditorValue.italic}
+          underline={textEditorValue.underline}
+          strikethrough={textEditorValue.strikethrough}
+          fontFamily={textEditorValue.fontFamily}
+          fontSize={textEditorValue.fontSize}
+          onBoldChange={bold => {
+            handleTextChange({ ...textEditorValue, bold })
           }}
-        >
-          <TextEditorInputs />
-          <ToggleButton
-            labelProps={{ title: "Move" }}
-            checked={isMoving}
-            onChange={() => {
-              setIsMoving(!isMoving)
-            }}
-          >
-            <BiMove />
-          </ToggleButton>
-        </Toolbar>
-      )}
+          onItalicChange={italic => {
+            handleTextChange({ ...textEditorValue, italic })
+          }}
+          onUnderlineChange={underline => {
+            handleTextChange({ ...textEditorValue, underline })
+          }}
+          onStrikethroughChange={strikethrough => {
+            handleTextChange({ ...textEditorValue, strikethrough })
+          }}
+          onFontFamilyChange={fontFamily => {
+            handleTextChange({ ...textEditorValue, fontFamily })
+          }}
+          onFontSizeChange={fontSize => {
+            handleTextChange({ ...textEditorValue, fontSize })
+          }}
+        />
+      </MemeCanvasToolbar>
       <TransformControls
         active={isActive}
         x={x}
@@ -91,42 +112,38 @@ export const MemeCanvasText = ({
         scale={inverseZoomScale}
         snapBoundaries={snapBoundaries}
         zIndex={orderIndex}
+        hasMoveHandle={true}
         onMove={moveTextHandler}
         onResize={resizeTextHandler}
-        allowMove={isMoving}
-        selectionBoxProps={{
-          onMouseDown: () => {
-            hasInteracted.current = false
-          },
-          onTouchStart: () => {
-            hasInteracted.current = false
-          },
-          onClick: () => {
-            if (!hasInteracted.current) {
-              dispatch(setActiveElementId(null))
+        moveHandleProps={{
+          onTouchStart: evt => {
+            if (isActive) {
+              // Stop propagation to prevent canvas panning while moving the text
+              evt.stopPropagation()
             }
           },
         }}
       >
         <MemeTextEditor
-          value={html}
-          onChange={handleChange}
+          value={textEditorValue}
+          className={PREVENT_DESELECT_CLASS}
+          onChange={handleTextChange}
           textBoxProps={{
             style: {
               top: y,
               left: x,
               width,
               height,
+              background: backgroundColor,
               zIndex: orderIndex,
-            },
-            onMouseDown: evt => {
-              evt.stopPropagation()
-            },
-            onTouchStart: evt => {
-              evt.stopPropagation()
             },
             onClick: () => {
               dispatch(setActiveElementId(id))
+            },
+            onContextMenu: evt => {
+              evt.preventDefault()
+              evt.stopPropagation()
+              openTextContextMenu({ x: evt.clientX, y: evt.clientY })
             },
           }}
         />

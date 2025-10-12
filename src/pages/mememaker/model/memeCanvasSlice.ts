@@ -34,8 +34,8 @@ export const memeCanvasSlice = createSlice({
     selectActiveElementId: state => state.activeElementId,
     selectIsActiveElement: createSelector(
       (state: MemeCanvasSliceState) => state.activeElementId,
-      (_, id: string) => id,
-      (activeId: string | null, id: string) => activeId === id,
+      (_, id: string | null) => id,
+      (activeId: string | null, id: string | null) => activeId === id,
     ),
   },
 })

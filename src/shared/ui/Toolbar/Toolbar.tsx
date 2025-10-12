@@ -1,8 +1,7 @@
-import type { JSX } from "react"
+import { useContext, type JSX } from "react"
 import ReactDOM from "react-dom"
 import styled from "styled-components"
-
-import { TOOLBAR_ROOT_ID } from "./constants"
+import { ToolbarRootContext } from "./ToolbarRoot"
 
 export interface ToolbarProps {
   className?: string
@@ -13,7 +12,7 @@ export interface ToolbarProps {
 export const ToolbarContainer = styled.div`
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: stretch;
   justify-content: flex-start;
   width: fit-content;
   gap: var(--spacing-unit);
@@ -23,10 +22,11 @@ export const ToolbarContainer = styled.div`
 `
 
 export const Toolbar = ({ className, toolbarProps, children }: ToolbarProps): JSX.Element => {
+  const root = useContext(ToolbarRootContext)
   return ReactDOM.createPortal(
     <ToolbarContainer className={className} {...toolbarProps}>
       {children}
     </ToolbarContainer>,
-    document.getElementById(TOOLBAR_ROOT_ID) ?? document.body,
+    root,
   )
 }

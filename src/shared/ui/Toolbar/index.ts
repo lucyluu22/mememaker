@@ -1,2 +1,3 @@
+export type { ToolbarProps } from "./Toolbar"
 export { Toolbar, ToolbarContainer } from "./Toolbar"
-export { ToolbarRoot } from "./ToolbarRoot"
+export { ToolbarRoot, ToolbarRootContext } from "./ToolbarRoot"

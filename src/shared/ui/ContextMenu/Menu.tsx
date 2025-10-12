@@ -1,4 +1,5 @@
-import type { JSX, PropsWithChildren } from "react"
+import type { JSX, PropsWithChildren, HTMLAttributes } from "react"
+import ReactDom from "react-dom"
 import { useRef, useEffect } from "react"
 import styled, { keyframes } from "styled-components"
 
@@ -26,16 +27,18 @@ const slideOut = keyframes`
   }
 `
 
+export type OpenDirection = "bottom" | "top"
 export interface MenuProps<Context = undefined> {
   open: boolean
   x: number
   y: number
+  openFrom?: OpenDirection
   context?: Context
-  menuContainerProps?: React.HTMLAttributes<HTMLDivElement>
-  onClose: () => void
+  menuContainerProps?: HTMLAttributes<HTMLDivElement>
+  onClose: (e?: Event) => void
 }
 
-const MenuContainer = styled.div<{ $open: boolean }>`
+const MenuContainer = styled.div<{ $open: boolean; $openFrom: OpenDirection }>`
   display: flex;
   flex-direction: column;
   position: fixed;
@@ -45,17 +48,18 @@ const MenuContainer = styled.div<{ $open: boolean }>`
   border-radius: var(--border-radius);
   box-shadow: var(--shadow);
   min-width: 160px;
-  padding: var(--spacing-unit);
+  padding: 0.25rem;
   z-index: var(--z-index-context-menu);
   animation: ${props => (props.$open ? slideIn : slideOut)} 0.3s;
   animation-fill-mode: forwards;
-  transform-origin: top center;
+  transform-origin: ${props => props.$openFrom} center;
 `
 
 export const Menu = ({
   open,
   x,
   y,
+  openFrom = "bottom",
   menuContainerProps,
   onClose,
   children,
@@ -69,6 +73,7 @@ export const Menu = ({
   const { x: boundX, y: boundY } = useBoundedCoordinates({
     x,
     y,
+    origin: openFrom,
     boundedElement: menuRef,
     recalcDeps: [open],
   })
@@ -78,7 +83,7 @@ export const Menu = ({
     if (!open) return
     const handleClose = (e: Event) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        onClose()
+        onClose(e)
       }
     }
 
@@ -90,9 +95,10 @@ export const Menu = ({
     }
   }, [open, onClose])
 
-  return (
+  return ReactDom.createPortal(
     <MenuContainer
       $open={open}
+      $openFrom={openFrom}
       ref={menuRef}
       style={{ top: boundY, left: boundX }}
       tabIndex={-1}
@@ -101,6 +107,7 @@ export const Menu = ({
       {...menuContainerProps}
     >
       {children}
-    </MenuContainer>
+    </MenuContainer>,
+    document.body,
   )
 }

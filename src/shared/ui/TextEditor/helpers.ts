@@ -1,13 +1,26 @@
-// Returns true if the color is light, false if dark
-// Accepts hex color string (e.g. "#ffffff" or "ffffff")
-export const isColorLight = (hex: string): boolean => {
-  let c = hex.replace(/^#/, "")
-  if (c.length === 3) {
-    c = c[0] + c[0] + c[1] + c[1] + c[2] + c[2]
+import { intersection } from "lodash"
+import { availableFonts } from "./availableFonts"
+
+export interface TextValue {
+  html: string // html of the contenteditable div
+  bold: boolean
+  italic: boolean
+  underline: boolean
+  strikethrough: boolean
+  fontFamily: string
+  fontSize: number
+  color: string
+}
+
+export const getDefaultTextValue = (text: string): TextValue => {
+  return {
+    html: `<div>${text}</div>`,
+    bold: false,
+    italic: false,
+    underline: false,
+    strikethrough: false,
+    fontFamily: intersection(["Impact", "Arial"], availableFonts)[0],
+    fontSize: 24,
+    color: "#000000",
   }
-  const r = parseInt(c.substring(0, 2), 16)
-  const g = parseInt(c.substring(2, 4), 16)
-  const b = parseInt(c.substring(4, 6), 16)
-  // Perceived luminance formula (not linearized, approximation good enough for this)
-  return 0.299 * r + 0.587 * g + 0.114 * b > 186
 }

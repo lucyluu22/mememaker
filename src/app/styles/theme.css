@@ -6,6 +6,7 @@
   --primary-color: #1f1f1f;
   --primary-color-darker: #111111;
   --primary-color-border: #000000;
+  --primary-color-contrast: #ffffff;
   --on-primary-color: #bababa;
   --secondary-color: #0b59b8;
   --secondary-color-darker: #06346b;
@@ -18,10 +19,8 @@
   --on-context-color-danger: #dddddd;
 
   --spacing-unit: 0.25rem;
-  --input-height: 3rem;
-  --toolbar-height: 3rem;
-  --button-padding: calc(var(--spacing-unit) * 2);
-  --input-padding: 0 calc(var(--spacing-unit) * 2);
+  --input-padding: calc(var(--spacing-unit) * 2);
+  --thumb-size: 1.5rem;
   --border-radius: 4px;
   --shadow:
     1px 2px 2px rgba(0, 0, 0, 0.1), 2px 4px 4px rgba(0, 0, 0, 0.1), 3px 6px 6px rgba(0, 0, 0, 0.1);
@@ -37,7 +36,8 @@
   --transform-region-border-color: white;
 
   @media (pointer: coarse) {
+    --spacing-unit: 0.5rem;
+    --thumb-size: 2rem;
     --transform-handle-size: 24px;
-    --button-padding: calc(var(--spacing-unit) * 4);
   }
 }

@@ -5,4 +5,5 @@ export const memeSlice = makeMemeSlice()
 export const { updateOrder, addImage, removeImage, updateImage, addText, updateText, removeText } =
   memeSlice.actions
 
-export const { selectImages, selectMeme, selectById, selectOrderIndexById } = memeSlice.selectors
+export const { selectMeme, selectImageById, selectTextsById, selectOrderIndexById } =
+  memeSlice.selectors
