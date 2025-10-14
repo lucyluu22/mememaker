@@ -12,13 +12,14 @@ const NoContentContainer = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: calc(var(--spacing-unit) * 4);
-  color: var(--on-primary-color);
 `
 
 const ActionsRow = styled.div`
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: var(--spacing-unit);
+  padding: 0 var(--spacing-unit);
 `
 
 export const MemeCanvasNoContent = (): JSX.Element => {
