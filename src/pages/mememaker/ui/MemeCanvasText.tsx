@@ -141,9 +141,11 @@ export const MemeCanvasText = ({
               dispatch(setActiveElementId(id))
             },
             onContextMenu: evt => {
-              evt.preventDefault()
-              evt.stopPropagation()
-              openTextContextMenu({ x: evt.clientX, y: evt.clientY })
+              if (isActive) {
+                evt.preventDefault()
+                evt.stopPropagation()
+                openTextContextMenu({ x: evt.clientX, y: evt.clientY })
+              }
             },
           }}
         />

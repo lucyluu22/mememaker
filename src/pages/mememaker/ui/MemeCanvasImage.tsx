@@ -102,9 +102,11 @@ export const MemeCanvasImage = ({
             }
           }}
           onContextMenu={evt => {
-            evt.preventDefault()
-            evt.stopPropagation()
-            openImageContextMenu({ x: evt.clientX, y: evt.clientY })
+            if (isActive) {
+              evt.preventDefault()
+              evt.stopPropagation()
+              openImageContextMenu({ x: evt.clientX, y: evt.clientY })
+            }
           }}
         />
       </TransformControls>
