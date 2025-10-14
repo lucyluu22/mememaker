@@ -30,6 +30,8 @@ export const MemeContextMenu = (contextMenuProps: MenuProps): JSX.Element => {
     if (!memeElement) throw new Error("Meme container not found")
 
     return await domToBlob(memeElement, {
+      width: memeElement.clientWidth,
+      height: memeElement.clientHeight,
       filter: node =>
         !(node instanceof HTMLElement && node.classList.contains(EXCLUDE_RENDER_CLASS)),
     })
