@@ -2,10 +2,10 @@ import type { JSX, PropsWithChildren } from "react"
 import { flow, clamp } from "lodash/fp"
 import { identity } from "lodash"
 import ReactDOM from "react-dom"
-import { useRef } from "react"
+import { useRef, useContext } from "react"
 
 import type { PointDelta } from "./useDragIntent"
-import { TRANSFORM_CONTROLS_ROOT_ID } from "./TransformControlsRoot"
+import { TransformControlsRootContext } from "./TransformControlsRoot"
 import { SelectionRegion } from "./SelectionRegion"
 import { type Anchor, AnchorHandle } from "./AnchorHandle"
 import { MoveHandle } from "./MoveHandle"
@@ -73,6 +73,7 @@ export const TransformControls = ({
   onResize,
   children,
 }: PropsWithChildren<TransformControlProps>): JSX.Element => {
+  const root = useContext(TransformControlsRootContext)
   // We need to track internal states before any transformations are applied.
   const rawX = useRef(x)
   const rawY = useRef(y)
@@ -211,7 +212,6 @@ export const TransformControls = ({
           width={width}
           height={height}
           scale={scale}
-          allowMove={allowMove}
           zIndex={zIndex}
           {...selectionRegionProps}
         >
@@ -228,9 +228,14 @@ export const TransformControls = ({
             <MoveHandle $top $left $scale={scale} {...dragMoveHandlers} {...moveHandleProps} />
           )}
         </SelectionRegion>,
-        document.getElementById(TRANSFORM_CONTROLS_ROOT_ID) ?? document.body,
+        root,
       )}
-      <div {...(!hasMoveHandle ? dragMoveHandlers : {})}>{children}</div>
+      <div
+        {...(!hasMoveHandle && allowMove ? dragMoveHandlers : {})}
+        style={{ cursor: !hasMoveHandle && active && allowMove ? "move" : "auto" }}
+      >
+        {children}
+      </div>
     </>
   )
 }

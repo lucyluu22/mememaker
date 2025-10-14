@@ -1,41 +1,34 @@
 import type { JSX } from "react"
-import { BiClipboard, BiImageAlt, BiText, BiExport, BiCopy } from "react-icons/bi"
+import { BiClipboard, BiImageAdd, BiText, BiExport, BiCopy } from "react-icons/bi"
 import { useAppDispatch, useAppSelector } from "src/app/hooks"
 
-import { setActiveElementId } from "../../model/memeCanvasSlice"
-import {
-  addImage,
-  addText,
-  selectMemeBackgroundColor,
-  updateBackgroundColor,
-} from "../../model/memeSlice"
+import { selectMemeBackgroundColor, updateBackgroundColor } from "../../model/memeSlice"
 
 import type { MenuProps } from "src/shared/ui/ContextMenu"
 import { Menu, MenuHeader, MenuItem, Separator, useContextMenu } from "src/shared/ui/ContextMenu"
 import { Icon } from "src/shared/ui/Icon"
 import { ColorInput } from "src/shared/ui/Inputs"
+import { useCommonMemeHandlers } from "../useCommonMemeHandlers"
 
 export const useMemeContextMenu = useContextMenu
 
 export const MemeContextMenu = (contextMenuProps: MenuProps): JSX.Element => {
   const dispatch = useAppDispatch()
+  const { addImage, addText, paste } = useCommonMemeHandlers()
   const backgroundColor = useAppSelector(selectMemeBackgroundColor)
 
-  const onAddImage = (url: string, naturalWidth: number, naturalHeight: number) => {
-    const addImageAction = addImage({
-      url,
-      naturalWidth,
-      naturalHeight,
-    })
-    dispatch(addImageAction)
-    dispatch(setActiveElementId(addImageAction.payload.id))
+  const onAddImage = async (image: Blob) => {
+    await addImage(image)
     contextMenuProps.onClose()
   }
 
   const onAddText = () => {
-    const addTextAction = addText()
-    dispatch(addTextAction)
-    dispatch(setActiveElementId(addTextAction.payload.id))
+    addText()
+    contextMenuProps.onClose()
+  }
+
+  const onPaste = async () => {
+    await paste()
     contextMenuProps.onClose()
   }
 
@@ -44,7 +37,7 @@ export const MemeContextMenu = (contextMenuProps: MenuProps): JSX.Element => {
       <MenuHeader>Meme</MenuHeader>
       <MenuItem as="label">
         <Icon>
-          <BiImageAlt />
+          <BiImageAdd />
         </Icon>
         Add Image
         <input
@@ -52,12 +45,7 @@ export const MemeContextMenu = (contextMenuProps: MenuProps): JSX.Element => {
           onChange={e => {
             if (e.target.files) {
               const image = e.target.files[0]
-              void (async () => {
-                const bitmap = await createImageBitmap(image)
-                const fileUrl = URL.createObjectURL(image)
-                onAddImage(fileUrl, bitmap.width, bitmap.height)
-                bitmap.close()
-              })()
+              void onAddImage(image)
             }
           }}
           type="file"
@@ -65,13 +53,21 @@ export const MemeContextMenu = (contextMenuProps: MenuProps): JSX.Element => {
           style={{ display: "none" }}
         />
       </MenuItem>
-      <MenuItem onClick={onAddText}>
+      <MenuItem
+        onClick={() => {
+          onAddText()
+        }}
+      >
         <Icon>
           <BiText />
         </Icon>
         Add Text
       </MenuItem>
-      <MenuItem>
+      <MenuItem
+        onClick={() => {
+          void onPaste()
+        }}
+      >
         <Icon>
           <BiClipboard />
         </Icon>

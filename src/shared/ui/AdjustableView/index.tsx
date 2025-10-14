@@ -1,7 +1,7 @@
 /**
  * AdjustableView
  * Allows panning and zooming of wrapped element.
- * TODO: Convert to functional component (good luck).
+ * TODO: Convert to functional component
  */
 
 import { clamp, debounce, noop } from "lodash"
@@ -301,10 +301,10 @@ export class AdjustableView extends React.PureComponent<
         onTouchMove={this.onTouchMove}
         onTouchEnd={this.onPanEnd}
       >
+        <AdjustableViewZoomIndicator zoom={zoom} />
         <AdjustableViewContent>
           {/* The extra padding is to circumvent margin collapsing without hiding overflow. */}
           <div style={{ position: "relative", padding: 1 }}>
-            <AdjustableViewZoomIndicator zoom={zoom} />
             <AdjustableViewScaler
               zoom={zoom}
               contentWidth={contentWidth}

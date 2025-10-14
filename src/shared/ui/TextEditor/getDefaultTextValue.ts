@@ -12,9 +12,9 @@ export interface TextValue {
   color: string
 }
 
-export const getDefaultTextValue = (text: string): TextValue => {
+export const getDefaultTextValue = (html: string): TextValue => {
   return {
-    html: `<div>${text}</div>`,
+    html: `<div>${html}</div>`,
     bold: false,
     italic: false,
     underline: false,

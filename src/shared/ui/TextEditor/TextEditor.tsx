@@ -4,13 +4,14 @@
  * Formats are applied to the entire text content as this component is intended to contain only small text chunks (as typically seen in memes).
  */
 
-import type { JSX } from "react"
+import type { JSX, RefObject } from "react"
 import { useRef, useEffect } from "react"
 import styled from "styled-components"
 
-import type { TextValue } from "./helpers"
+import type { TextValue } from "./getDefaultTextValue"
 
 export interface TextEditorProps {
+  ref?: RefObject<HTMLDivElement | null>
   value: TextValue
   className?: string
   textBoxProps?: React.HTMLAttributes<HTMLDivElement>
@@ -21,7 +22,6 @@ const TextBox = styled.div.attrs({ contentEditable: true, suppressContentEditabl
   width: 100%;
   height: 100%;
   font-size: 1rem;
-  color: black;
   user-select: text;
   -webkit-user-select: text;
   -webkit-touch-callout: default;
@@ -33,12 +33,20 @@ const TextBox = styled.div.attrs({ contentEditable: true, suppressContentEditabl
 `
 
 export const TextEditor = ({
+  ref,
   value,
   className,
   textBoxProps = {},
   onChange,
 }: TextEditorProps): JSX.Element => {
   const editorRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (ref && editorRef.current) {
+      // forward the ref
+      ref.current = editorRef.current
+    }
+  }, [ref, editorRef])
 
   // Keep the content of the contenteditable div in sync with the value prop
   useEffect(() => {

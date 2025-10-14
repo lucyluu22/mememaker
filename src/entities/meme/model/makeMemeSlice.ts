@@ -41,6 +41,12 @@ export const initialState: MemeState = {
   texts: [],
 }
 
+const selectMemeLayers = createSelector(
+  (state: MemeState) => state.images,
+  (state: MemeState) => state.texts,
+  (images, texts) => [...images, ...texts],
+)
+
 export const makeMemeSlice = <Name extends string = "meme">(name: Name = "meme" as Name) =>
   createSlice({
     name,
@@ -126,6 +132,13 @@ export const makeMemeSlice = <Name extends string = "meme">(name: Name = "meme" 
     }),
     selectors: {
       selectMeme: state => state,
+      selectMemeLayers,
+      selectMemeWidth: createSelector(selectMemeLayers, layers =>
+        layers.length === 0 ? 0 : Math.max(...layers.map(layer => layer.x + layer.width)),
+      ),
+      selectMemeHeight: createSelector(selectMemeLayers, layers =>
+        layers.length === 0 ? 0 : Math.max(...layers.map(layer => layer.y + layer.height)),
+      ),
       selectMemeBackgroundColor: state => state.backgroundColor,
       selectImageById: createSelector(
         (state: MemeState) => state.images,

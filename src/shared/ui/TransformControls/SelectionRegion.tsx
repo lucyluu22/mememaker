@@ -9,15 +9,13 @@ export interface SelectionRegionProps {
   width: number
   height: number
   scale?: number
-  allowMove?: boolean
   zIndex?: number
   regionProps?: React.HTMLAttributes<HTMLDivElement>
   children?: React.ReactNode
 }
 
-const Region = styled.div<{ $active: boolean; $allowMove: boolean }>`
+const Region = styled.div<{ $active: boolean }>`
   position: absolute;
-  cursor: ${props => (props.$active && props.$allowMove ? "move" : "auto")};
   pointer-events: none;
   z-index: ${props => (props.$active ? `99999` : `var(--z-index)`)};
   box-shadow:
@@ -34,7 +32,6 @@ export const SelectionRegion = ({
   width,
   height,
   scale = 1,
-  allowMove = true,
   zIndex = 0,
   regionProps = {},
   children,
@@ -58,7 +55,6 @@ export const SelectionRegion = ({
         } as CSSProperties
       }
       $active={active}
-      $allowMove={allowMove}
     >
       {children}
     </Region>

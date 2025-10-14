@@ -42,18 +42,17 @@ export const MemeImageContextMenu = ({
 
   const dispatch = useAppDispatch()
 
+  if (!image) return null
+
   const onResetDimensions = () => {
-    if (image) {
-      dispatch(
-        updateImage({ id: image.id, width: image.naturalWidth, height: image.naturalHeight }),
-      )
-      contextMenuProps.onClose()
-    }
+    dispatch(updateImage({ id: image.id, width: image.naturalWidth, height: image.naturalHeight }))
+    contextMenuProps.onClose()
   }
 
   const onRemove = () => {
     dispatch(setActiveElementId(null))
     dispatch(removeImage(imageId))
+    URL.revokeObjectURL(image.url)
     contextMenuProps.onClose()
   }
 
@@ -67,7 +66,6 @@ export const MemeImageContextMenu = ({
     contextMenuProps.onClose()
   }
 
-  if (!image) return null
   return (
     <Menu {...contextMenuProps}>
       <MenuHeader>
