@@ -8,24 +8,11 @@
  */
 
 import { createSlice, createSelector, nanoid } from "@reduxjs/toolkit"
-import type { TextValue } from "src/shared/ui/TextEditor"
-import type { TransformableElement } from "src/shared/ui/TransformControls"
+import { type MemeLayer } from "./memeLayer"
+import type { MemeImage } from "./memeImage"
+import type { MemeText } from "./memeText"
 
 import { getDefaultTextValue } from "src/shared/ui/TextEditor"
-
-export interface MemeImage extends TransformableElement {
-  id: string // unique identifier
-  url: string // The image file URL
-  naturalWidth: number // original image width
-  naturalHeight: number // original image height
-  opacity: number // image opacity between 0 and 1
-}
-
-export interface MemeText extends TransformableElement {
-  id: string // unique identifier
-  textEditorValue: TextValue
-  backgroundColor: string
-}
 
 export interface MemeState {
   backgroundColor: string
@@ -44,7 +31,7 @@ export const initialState: MemeState = {
 const selectMemeLayers = createSelector(
   (state: MemeState) => state.images,
   (state: MemeState) => state.texts,
-  (images, texts) => [...images, ...texts],
+  (images, texts): MemeLayer[] => [...images, ...texts],
 )
 
 export const makeMemeSlice = <Name extends string = "meme">(name: Name = "meme" as Name) =>

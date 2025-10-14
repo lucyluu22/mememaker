@@ -3,7 +3,7 @@ import styled from "styled-components"
 import { useAppDispatch, useAppSelector } from "src/app/hooks"
 import { BiLink, BiUnlink, BiMinusFront, BiMinusBack, BiCopy, BiTrash } from "react-icons/bi"
 
-import type { MemeImage } from "src/entities/meme"
+import { type MemeImage, copyMemeImage } from "src/entities/meme"
 import type { MenuProps } from "src/shared/ui/ContextMenu"
 import { Menu, MenuItem, useContextMenu, MenuHeader, Separator } from "src/shared/ui/ContextMenu"
 import { Icon } from "src/shared/ui/Icon"
@@ -43,6 +43,20 @@ export const MemeImageContextMenu = ({
   const dispatch = useAppDispatch()
 
   if (!image) return null
+
+  const onCopyImage = async () => {
+    const copiedMemeImage = await copyMemeImage(image)
+    await navigator.clipboard.write([
+      new ClipboardItem({
+        // text/plain is guaranteed to be supported across all browsers that support ClipboardItem
+        "text/plain": JSON.stringify({
+          type: "application/x-mememaker.memeimage",
+          data: copiedMemeImage,
+        }),
+      }),
+    ])
+    contextMenuProps.onClose()
+  }
 
   const onResetDimensions = () => {
     dispatch(updateImage({ id: image.id, width: image.naturalWidth, height: image.naturalHeight }))
@@ -84,7 +98,7 @@ export const MemeImageContextMenu = ({
           )
         })()}
       </MenuHeader>
-      <MenuItem>
+      <MenuItem onClick={() => void onCopyImage()}>
         <Icon>
           <BiCopy />
         </Icon>

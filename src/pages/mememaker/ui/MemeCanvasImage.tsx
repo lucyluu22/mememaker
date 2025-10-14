@@ -46,6 +46,7 @@ export const MemeCanvasImage = ({
     hasInteracted.current = true
     dispatch(updateImage({ id, x, y }))
   }
+
   const resizeImageHandler = (width: number, height: number) => {
     hasInteracted.current = true
     dispatch(updateImage({ id, width, height }))

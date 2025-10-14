@@ -2,7 +2,7 @@ import type { JSX } from "react"
 import { useAppDispatch, useAppSelector } from "src/app/hooks"
 import { BiMinusFront, BiMinusBack, BiCopy, BiTrash } from "react-icons/bi"
 
-import type { MemeText } from "src/entities/meme"
+import { copyMemeText, type MemeText } from "src/entities/meme"
 import type { MenuProps } from "src/shared/ui/ContextMenu"
 import { Menu, MenuItem, useContextMenu, MenuHeader, Separator } from "src/shared/ui/ContextMenu"
 import { ColorInput } from "src/shared/ui/Inputs"
@@ -20,10 +20,24 @@ export const useMemeTextContextMenu = useContextMenu
 export const MemeTextContextMenu = ({
   textId,
   ...contextMenuProps
-}: MemeTextContextMenuProps): JSX.Element => {
+}: MemeTextContextMenuProps): JSX.Element | null => {
   const text = useAppSelector(state => selectTextsById(state, textId))
-
   const dispatch = useAppDispatch()
+
+  if (!text) return null
+
+  const onCopyText = async () => {
+    await navigator.clipboard.write([
+      new ClipboardItem({
+        // text/plain is guaranteed to be supported across all browsers that support ClipboardItem
+        "text/plain": JSON.stringify({
+          type: "application/x-mememaker.memetext",
+          data: copyMemeText(text),
+        }),
+      }),
+    ])
+    contextMenuProps.onClose()
+  }
 
   const onRemove = () => {
     dispatch(setActiveElementId(null))
@@ -47,30 +61,26 @@ export const MemeTextContextMenu = ({
       <MenuItem as="div">
         <ColorInput
           alpha
-          color={text?.textEditorValue.color}
+          color={text.textEditorValue.color}
           label="Text Color"
           onChange={color => {
-            if (text) {
-              dispatch(
-                updateText({ id: textId, textEditorValue: { ...text.textEditorValue, color } }),
-              )
-            }
+            dispatch(
+              updateText({ id: textId, textEditorValue: { ...text.textEditorValue, color } }),
+            )
           }}
         />
       </MenuItem>
       <MenuItem as="div">
         <ColorInput
           alpha
-          color={text?.backgroundColor}
+          color={text.backgroundColor}
           label="Background Color"
           onChange={color => {
-            if (text) {
-              dispatch(updateText({ id: textId, backgroundColor: color }))
-            }
+            dispatch(updateText({ id: textId, backgroundColor: color }))
           }}
         />
       </MenuItem>
-      <MenuItem>
+      <MenuItem onClick={() => void onCopyText()}>
         <Icon>
           <BiCopy />
         </Icon>
