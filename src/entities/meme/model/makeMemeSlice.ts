@@ -8,11 +8,11 @@
  */
 
 import { createSlice, createSelector, nanoid } from "@reduxjs/toolkit"
-import { type MemeLayer } from "./memeLayer"
+import { getDefaultTextValue } from "src/shared/ui/TextEditor"
+
+import type { MemeLayer } from "./memeLayer"
 import type { MemeImage } from "./memeImage"
 import type { MemeText } from "./memeText"
-
-import { getDefaultTextValue } from "src/shared/ui/TextEditor"
 
 export interface MemeState {
   backgroundColor: string
@@ -126,6 +126,7 @@ export const makeMemeSlice = <Name extends string = "meme">(name: Name = "meme" 
       selectMemeHeight: createSelector(selectMemeLayers, layers =>
         layers.length === 0 ? 0 : Math.max(...layers.map(layer => layer.y + layer.height)),
       ),
+      selectMemeHasContent: createSelector(selectMemeLayers, layers => layers.length > 0),
       selectMemeBackgroundColor: state => state.backgroundColor,
       selectImageById: createSelector(
         (state: MemeState) => state.images,

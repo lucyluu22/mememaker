@@ -19,7 +19,7 @@ import { MemeContextMenu, useMemeContextMenu } from "./ContextMenu/MemeContextMe
 import { MemeCanvasImage } from "./MemeCanvasImage"
 import { MemeCanvasText } from "./MemeCanvasText"
 
-import { PREVENT_DESELECT_CLASS } from "./constants"
+import { MEME_ID, PREVENT_DESELECT_CLASS, EXCLUDE_RENDER_CLASS } from "./constants"
 import { MemeCanvasToolbar, MemeCanvasToolbarRoot } from "./MemeCanvasToolbar"
 import { MemeCanvasNoContent } from "./MemeCanvasNoContent"
 
@@ -103,8 +103,11 @@ export const MemeCanvas = (): JSX.Element => {
             zoom={zoom}
             onZoom={z => dispatch(setZoom(z))}
           >
-            <TransformControlsRoot className={PREVENT_DESELECT_CLASS}>
+            <TransformControlsRoot
+              className={[PREVENT_DESELECT_CLASS, EXCLUDE_RENDER_CLASS].join(" ")}
+            >
               <MemeContainer
+                id={MEME_ID}
                 style={{
                   width: memeWidth,
                   height: memeHeight,

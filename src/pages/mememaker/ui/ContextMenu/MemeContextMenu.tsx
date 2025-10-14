@@ -1,8 +1,15 @@
 import type { JSX } from "react"
-import { BiClipboard, BiImageAdd, BiText, BiExport, BiCopy } from "react-icons/bi"
+import { BiClipboard, BiImageAdd, BiText, BiDownload, BiCopy } from "react-icons/bi"
 import { useAppDispatch, useAppSelector } from "src/app/hooks"
+import { domToBlob } from "modern-screenshot"
 
-import { selectMemeBackgroundColor, updateBackgroundColor } from "../../model/memeSlice"
+import {
+  selectMemeBackgroundColor,
+  selectMemeHasContent,
+  updateBackgroundColor,
+} from "../../model/memeSlice"
+
+import { MEME_ID, EXCLUDE_RENDER_CLASS } from "../constants"
 
 import type { MenuProps } from "src/shared/ui/ContextMenu"
 import { Menu, MenuHeader, MenuItem, Separator, useContextMenu } from "src/shared/ui/ContextMenu"
@@ -16,6 +23,17 @@ export const MemeContextMenu = (contextMenuProps: MenuProps): JSX.Element => {
   const dispatch = useAppDispatch()
   const { addImage, addText, paste } = useCommonMemeHandlers()
   const backgroundColor = useAppSelector(selectMemeBackgroundColor)
+  const memeHasContent = useAppSelector(selectMemeHasContent)
+
+  const renderMemeToImage = async () => {
+    const memeElement = document.getElementById(MEME_ID)
+    if (!memeElement) throw new Error("Meme container not found")
+
+    return await domToBlob(memeElement, {
+      filter: node =>
+        !(node instanceof HTMLElement && node.classList.contains(EXCLUDE_RENDER_CLASS)),
+    })
+  }
 
   const onAddImage = async (image: Blob) => {
     await addImage(image)
@@ -29,6 +47,32 @@ export const MemeContextMenu = (contextMenuProps: MenuProps): JSX.Element => {
 
   const onPaste = async () => {
     await paste()
+    contextMenuProps.onClose()
+  }
+
+  const onCopyToClipboard = async () => {
+    if (!memeHasContent) return
+    const imageBlob = await renderMemeToImage()
+    await navigator.clipboard.write([
+      new ClipboardItem({
+        // image/png is guaranteed to be supported across all browsers that support ClipboardItem
+        "image/png": imageBlob,
+      }),
+    ])
+    contextMenuProps.onClose()
+  }
+
+  const onDownload = async () => {
+    if (!memeHasContent) return
+    const imageBlob = await renderMemeToImage()
+    const url = URL.createObjectURL(imageBlob)
+    const link = document.createElement("a")
+    link.href = url
+    link.download = "meme.png"
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
     contextMenuProps.onClose()
   }
 
@@ -81,17 +125,17 @@ export const MemeContextMenu = (contextMenuProps: MenuProps): JSX.Element => {
         />
       </MenuItem>
       <Separator />
-      <MenuItem>
+      <MenuItem disabled={!memeHasContent} onClick={() => void onCopyToClipboard()}>
         <Icon>
           <BiCopy />
         </Icon>
-        Copy to Clipboard
+        Copy
       </MenuItem>
-      <MenuItem>
+      <MenuItem disabled={!memeHasContent} onClick={() => void onDownload()}>
         <Icon>
-          <BiExport />
+          <BiDownload />
         </Icon>
-        Save As
+        Download
       </MenuItem>
     </Menu>
   )

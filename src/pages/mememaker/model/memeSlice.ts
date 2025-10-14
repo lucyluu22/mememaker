@@ -18,6 +18,7 @@ export const {
   selectMemeLayers,
   selectMemeWidth,
   selectMemeHeight,
+  selectMemeHasContent,
   selectMemeBackgroundColor,
   selectImageById,
   selectTextsById,
