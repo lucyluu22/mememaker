@@ -11,6 +11,7 @@ export const {
   addText,
   updateText,
   removeText,
+  reset,
 } = memeSlice.actions
 
 export const {

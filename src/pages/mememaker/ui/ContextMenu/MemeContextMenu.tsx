@@ -1,5 +1,5 @@
 import type { JSX } from "react"
-import { BiClipboard, BiImageAdd, BiText, BiDownload, BiCopy } from "react-icons/bi"
+import { BiClipboard, BiImageAdd, BiText, BiDownload, BiCopy, BiTrash } from "react-icons/bi"
 import { useAppDispatch, useAppSelector } from "src/app/hooks"
 import { domToBlob } from "modern-screenshot"
 
@@ -7,6 +7,7 @@ import {
   selectMemeBackgroundColor,
   selectMemeHasContent,
   updateBackgroundColor,
+  reset as resetMeme,
 } from "../../model/memeSlice"
 
 import { MEME_ID, EXCLUDE_RENDER_CLASS } from "../constants"
@@ -32,6 +33,7 @@ export const MemeContextMenu = (contextMenuProps: MenuProps): JSX.Element => {
     return await domToBlob(memeElement, {
       width: memeElement.clientWidth,
       height: memeElement.clientHeight,
+      type: "image/png",
       filter: node =>
         !(node instanceof HTMLElement && node.classList.contains(EXCLUDE_RENDER_CLASS)),
     })
@@ -53,7 +55,6 @@ export const MemeContextMenu = (contextMenuProps: MenuProps): JSX.Element => {
   }
 
   const onCopyToClipboard = async () => {
-    if (!memeHasContent) return
     const imageBlob = await renderMemeToImage()
     await navigator.clipboard.write([
       new ClipboardItem({
@@ -65,7 +66,6 @@ export const MemeContextMenu = (contextMenuProps: MenuProps): JSX.Element => {
   }
 
   const onDownload = async () => {
-    if (!memeHasContent) return
     const imageBlob = await renderMemeToImage()
     const url = URL.createObjectURL(imageBlob)
     const link = document.createElement("a")
@@ -138,6 +138,20 @@ export const MemeContextMenu = (contextMenuProps: MenuProps): JSX.Element => {
           <BiDownload />
         </Icon>
         Download
+      </MenuItem>
+      <Separator />
+      <MenuItem
+        $danger
+        disabled={!memeHasContent}
+        onClick={() => {
+          dispatch(resetMeme())
+          contextMenuProps.onClose()
+        }}
+      >
+        <Icon>
+          <BiTrash />
+        </Icon>
+        Delete Meme
       </MenuItem>
     </Menu>
   )

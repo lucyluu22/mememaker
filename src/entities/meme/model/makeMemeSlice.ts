@@ -116,6 +116,9 @@ export const makeMemeSlice = <Name extends string = "meme">(name: Name = "meme" 
         state.order.splice(currentIndex, 1)
         state.order.splice(index ?? state.order.length, 0, id)
       }),
+      reset: create.reducer(() => {
+        return initialState
+      }),
     }),
     selectors: {
       selectMeme: state => state,
