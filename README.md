@@ -1,6 +1,8 @@
 # MemeMaker
 
-A mobile first application written with React, Redux, and Typescript.
+## **[mememakr.app](https://mememakr.app)**
+
+A modern, interactive web application for creating and editing memes with drag-and-drop functionality, built with React, TypeScript, and Redux Toolkit.
 
 ## 🎯 What It Does
 
