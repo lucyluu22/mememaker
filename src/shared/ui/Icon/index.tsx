@@ -1,5 +1,4 @@
 import styled from "styled-components"
-import { Button } from "../Inputs"
 
 export const Icon = styled.span`
   display: inline-block;
