@@ -56,7 +56,7 @@ export const MemeTextContextMenu = ({
   }
 
   return (
-    <Menu {...contextMenuProps}>
+    <Menu {...contextMenuProps} menuContainerProps={{ "aria-label": "text menu" }}>
       <MenuHeader>Text</MenuHeader>
       <MenuItem as="div">
         <ColorInput

@@ -61,7 +61,7 @@ export const MemeCanvasImage = ({
       />
       <MemeCanvasToolbar
         id={id}
-        menuButton={
+        menuButtonContent={
           <Icon>
             <BiImageAlt />
           </Icon>

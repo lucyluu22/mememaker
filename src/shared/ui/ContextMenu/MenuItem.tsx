@@ -5,7 +5,7 @@ export interface MenuItemProps extends React.ButtonHTMLAttributes<HTMLButtonElem
   $danger?: boolean
 }
 
-export const MenuItem = styled.button<MenuItemProps>`
+export const MenuItem = styled.button.attrs({ role: "menuitem" })<MenuItemProps>`
   display: flex;
   gap: calc(var(--spacing-unit) * 2);
   align-items: center;

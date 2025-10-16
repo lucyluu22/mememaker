@@ -20,7 +20,8 @@ export {
 
 export interface MemeCanvasToolbarProps {
   id: string | null
-  menuButton?: JSX.Element
+  menuButtonContent?: JSX.Element
+  menuButtonProps?: React.ButtonHTMLAttributes<HTMLButtonElement>
   menuProps: MenuProps
   onOpenContextMenu: ContextMenuOpenHandler
   onCloseContextMenu: ContextMenuCloseHandler
@@ -30,7 +31,8 @@ export interface MemeCanvasToolbarProps {
 
 export const MemeCanvasToolbar = ({
   id,
-  menuButton = (
+  menuButtonProps = {},
+  menuButtonContent = (
     <Icon>
       <BiMenu />
     </Icon>
@@ -55,8 +57,9 @@ export const MemeCanvasToolbar = ({
             })
           }
         }}
+        {...menuButtonProps}
       >
-        {menuButton}
+        {menuButtonContent}
       </Button>
       {children}
     </Toolbar>

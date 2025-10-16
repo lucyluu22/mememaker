@@ -27,7 +27,7 @@ export const MemeCanvasNoContent = (): JSX.Element => {
   return (
     <NoContentContainer>
       <ActionsRow>
-        <Button as="label" title="Add Image">
+        <Button as="label" title="Add Image" role="button">
           <Icon>
             <BiImageAdd />
           </Icon>

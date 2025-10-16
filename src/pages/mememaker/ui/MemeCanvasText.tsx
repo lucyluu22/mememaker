@@ -67,7 +67,7 @@ export const MemeCanvasText = ({
       />
       <MemeCanvasToolbar
         id={id}
-        menuButton={
+        menuButtonContent={
           <Icon>
             <BiText />
           </Icon>

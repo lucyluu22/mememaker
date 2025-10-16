@@ -39,6 +39,7 @@
     "@types/react-dom": "^19.1.1",
     "@vitejs/plugin-react": "^4.3.4",
     "@vitest/eslint-plugin": "^1.1.39",
+    "@vitest/ui": "^3.2.4",
     "babel-plugin-styled-components": "^2.1.4",
     "eslint": "^9.23.0",
     "eslint-config-prettier": "^10.1.1",

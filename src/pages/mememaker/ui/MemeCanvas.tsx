@@ -93,6 +93,7 @@ export const MemeCanvas = (): JSX.Element => {
         <MemeCanvasToolbar
           id={null}
           menuProps={memeContextMenuProps}
+          menuButtonProps={{ title: "Meme" }}
           onOpenContextMenu={openMemeContextMenu}
           onCloseContextMenu={closeMemeContextMenu}
         />
@@ -108,6 +109,7 @@ export const MemeCanvas = (): JSX.Element => {
             >
               <MemeContainer
                 id={MEME_ID}
+                data-testid="meme"
                 style={{
                   width: memeWidth,
                   height: memeHeight,

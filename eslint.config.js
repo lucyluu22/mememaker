@@ -69,8 +69,7 @@ const eslintConfig = defineConfig(
             {
               name: "react-redux",
               importNames: ["useSelector", "useStore", "useDispatch"],
-              message:
-                "Please use pre-typed versions from `src/app/hooks.ts` instead.",
+              message: "Please use pre-typed versions from `src/app/hooks.ts` instead.",
             },
           ],
         },
@@ -82,6 +81,13 @@ const eslintConfig = defineConfig(
       "@typescript-eslint/no-unsafe-return": 0,
       "@typescript-eslint/no-unsafe-member-access": 0,
       "@typescript-eslint/no-unsafe-call": 0,
+    },
+  },
+  {
+    name: "test-files",
+    files: ["**/*.test.{js,ts,jsx,tsx}", "**/*.spec.{js,ts,jsx,tsx}", "**/test/**/*"],
+    rules: {
+      "@typescript-eslint/no-non-null-assertion": 0,
     },
   },
 

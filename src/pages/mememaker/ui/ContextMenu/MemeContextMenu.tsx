@@ -79,7 +79,7 @@ export const MemeContextMenu = (contextMenuProps: MenuProps): JSX.Element => {
   }
 
   return (
-    <Menu {...contextMenuProps}>
+    <Menu {...contextMenuProps} menuContainerProps={{ "aria-label": "meme menu" }}>
       <MenuHeader>Meme</MenuHeader>
       <MenuItem as="label">
         <Icon>

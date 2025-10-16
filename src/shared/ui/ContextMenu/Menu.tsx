@@ -102,6 +102,8 @@ export const Menu = ({
       ref={menuRef}
       style={{ top: boundY, left: boundX }}
       tabIndex={-1}
+      role="menu"
+      aria-hidden={!open}
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       onAnimationEnd={() => !open && (menuRef.current!.style.display = "none")}
       {...menuContainerProps}

@@ -81,7 +81,7 @@ export const MemeImageContextMenu = ({
   }
 
   return (
-    <Menu {...contextMenuProps}>
+    <Menu {...contextMenuProps} menuContainerProps={{ "aria-label": "image menu" }}>
       <MenuHeader>
         Image
         {(() => {
