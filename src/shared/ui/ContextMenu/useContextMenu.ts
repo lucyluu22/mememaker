@@ -30,11 +30,7 @@ export const useContextMenu = ({
         parentElementRef.current = options.parentElement
         const rect = options.parentElement.getBoundingClientRect()
         setX(rect.left)
-        if (options.openFrom === "bottom") {
-          setY(rect.top)
-        } else {
-          setY(rect.bottom)
-        }
+        setY(rect.bottom)
       } else {
         parentElementRef.current = null
         setX(options.x)

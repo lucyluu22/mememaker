@@ -27,7 +27,8 @@
 
   --z-index-context-menu: 1000;
   --z-index-transform-controls: 100;
-  --z-index-toolbar: 100;
+
+  --toolbar-position: top;
 
   --transform-handle-size: 14px;
   --transform-handle-border-color: white;
@@ -41,5 +42,6 @@
     --spacing-unit: 0.5rem;
     --thumb-size: 2rem;
     --transform-handle-size: 24px;
+    --toolbar-position: bottom;
   }
 }

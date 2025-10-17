@@ -1,6 +1,6 @@
-import { type JSX } from "react"
+import { useContext, type JSX } from "react"
 import { useAppSelector } from "src/app/hooks"
-import { Toolbar, type ToolbarProps } from "src/shared/ui/Toolbar"
+import { Toolbar, ToolbarRootContext, type ToolbarProps } from "src/shared/ui/Toolbar"
 import { Button } from "src/shared/ui/Inputs"
 import { Icon } from "src/shared/ui/Icon"
 import { BiMenu } from "react-icons/bi"
@@ -43,6 +43,7 @@ export const MemeCanvasToolbar = ({
   toolbarProps,
   children,
 }: MemeCanvasToolbarProps): JSX.Element | null => {
+  const { toolbarPosition } = useContext(ToolbarRootContext)
   const isActive = useAppSelector(state => selectIsActiveElement(state, id))
   if (!isActive) return null
   return (
@@ -54,6 +55,7 @@ export const MemeCanvasToolbar = ({
           } else {
             onOpenContextMenu({
               parentElement: evt.currentTarget,
+              openFrom: toolbarPosition,
             })
           }
         }}

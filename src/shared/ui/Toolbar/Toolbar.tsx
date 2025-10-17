@@ -22,7 +22,7 @@ export const ToolbarContainer = styled.div`
 `
 
 export const Toolbar = ({ className, toolbarProps, children }: ToolbarProps): JSX.Element => {
-  const root = useContext(ToolbarRootContext)
+  const { root } = useContext(ToolbarRootContext)
   return ReactDOM.createPortal(
     <ToolbarContainer className={className} {...toolbarProps}>
       {children}

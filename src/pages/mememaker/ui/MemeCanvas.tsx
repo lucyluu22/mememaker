@@ -43,7 +43,6 @@ export const MemeCanvas = (): JSX.Element => {
   const memeHasContent = memeLayers.length > 0
   const memeWidth = useAppSelector(selectMemeWidth)
   const memeHeight = useAppSelector(selectMemeHeight)
-
   const activeElementId = useAppSelector(selectActiveElementId)
 
   const dispatch = useAppDispatch()
