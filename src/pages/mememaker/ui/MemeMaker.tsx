@@ -3,6 +3,8 @@ import styled from "styled-components"
 
 import { MemeCanvas } from "./MemeCanvas"
 
+declare const __APP_VERSION__: string
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -30,7 +32,7 @@ export const MemeMaker = (): JSX.Element => {
     <Container>
       <header>
         <Title>
-          MemeMaker <VersionTag>v1.0.0</VersionTag>
+          MemeMaker <VersionTag>v{__APP_VERSION__}</VersionTag>
         </Title>
       </header>
       <Main>
