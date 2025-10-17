@@ -35,6 +35,8 @@
   --transform-region-color: var(--secondary-color);
   --transform-region-border-color: white;
 
+  --adjustable-view-content-padding: calc((var(--transform-handle-size) * 2) + var(--spacing-unit));
+
   @media (pointer: coarse) {
     --spacing-unit: 0.5rem;
     --thumb-size: 2rem;

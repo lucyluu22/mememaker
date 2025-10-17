@@ -2,6 +2,6 @@ import styled from "styled-components"
 
 export const AdjustableViewContent = styled.div`
   margin: auto;
-  padding: calc(var(--spacing-unit) * 2);
+  padding: var(--adjustable-view-content-padding);
   transition: padding 0.5s;
 `
