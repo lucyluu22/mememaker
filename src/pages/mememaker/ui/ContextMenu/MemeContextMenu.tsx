@@ -1,7 +1,8 @@
 import type { JSX } from "react"
 import { BiClipboard, BiImageAdd, BiText, BiDownload, BiCopy, BiTrash } from "react-icons/bi"
 import { useAppDispatch, useAppSelector } from "src/app/hooks"
-import { domToBlob } from "modern-screenshot"
+import { domToBlob, createContext } from "modern-screenshot"
+import workerUrl from "modern-screenshot/worker?url"
 
 import {
   selectMemeBackgroundColor,
@@ -29,14 +30,23 @@ export const MemeContextMenu = (contextMenuProps: MenuProps): JSX.Element => {
   const renderMemeToImage = async () => {
     const memeElement = document.getElementById(MEME_ID)
     if (!memeElement) throw new Error("Meme container not found")
-
-    return await domToBlob(memeElement, {
+    const context = await createContext(memeElement, {
+      workerUrl,
+      workerNumber: 1,
       width: memeElement.clientWidth,
       height: memeElement.clientHeight,
       type: "image/png",
       filter: node =>
         !(node instanceof HTMLElement && node.classList.contains(EXCLUDE_RENDER_CLASS)),
     })
+
+    // drawImageCount is used by the "fixSvgXmlDecode" feature in modern-screenshot as a hacky way
+    // to get around webkit bugs with rendering images inside canvas.
+    // Initialising this to 1 instead of 0 seems to fix safari issues with blank images upon first render.
+    // It's a hacky solution to an already hacky solution!
+    context.drawImageCount = 1
+
+    return await domToBlob(context)
   }
 
   const onAddImage = async (image: Blob) => {
