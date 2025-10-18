@@ -31,8 +31,8 @@ export const MemeMaker = (): JSX.Element => {
   return (
     <Container>
       <header>
-        <Title>
-          MemeMaker <VersionTag>v{__APP_VERSION__}</VersionTag>
+        <Title title="MemeMaker was taken">
+          MemeMakr <VersionTag>v{__APP_VERSION__}</VersionTag>
         </Title>
       </header>
       <Main>
