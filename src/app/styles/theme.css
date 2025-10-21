@@ -1,8 +1,11 @@
 /*
  * Declare all CSS theme vars here
+ * TODO: Dunno if declaring the component specific ones here is a good idea?
+ *       Probably depends on how large this thing gets.
  */
 
 :root {
+  /* Colors */
   --primary-color: #1f1f1f;
   --primary-color-darker: #111111;
   --primary-color-border: #000000;
@@ -12,36 +15,70 @@
   --secondary-color-darker: #06346b;
   --secondary-color-border: #042a4a;
   --on-secondary-color: #dddddd;
-
-  /* Context state colors */
+  /* Context colors */
   --context-color-danger: #ff4d4f;
   --context-color-danger-border: #a8071a;
   --on-context-color-danger: #dddddd;
 
+  /* Spacing and Sizing */
   --spacing-unit: 0.25rem;
   --input-padding: calc(var(--spacing-unit) * 2);
   --thumb-size: 1.5rem;
+  --icon-size: 1.5rem;
+
+  /* Borders and shadows */
   --border-radius: 4px;
   --shadow:
     1px 2px 2px rgba(0, 0, 0, 0.1), 2px 4px 4px rgba(0, 0, 0, 0.1), 3px 6px 6px rgba(0, 0, 0, 0.1);
 
-  --z-index-context-menu: 1000;
-  --z-index-transform-controls: 100;
+  /* Context Menu */
+  --context-menu-z-index: 1000;
 
-  --toolbar-position: top;
+  /* Toolbar */
+  --toolbar-z-index: 200;
+  --toolbar-position-top: 0;
+  --toolbar-position-bottom: auto;
 
+  /* Transform Controls */
+  --transform-controls-z-index: 100;
   --transform-handle-size: 14px;
   --transform-handle-border-color: white;
   --transform-handle-color: var(--secondary-color);
   --transform-region-color: var(--secondary-color);
   --transform-region-border-color: white;
 
-  --adjustable-view-content-padding: calc((var(--transform-handle-size) * 2) + var(--spacing-unit));
+  /* Adjustable View */
+  /*
+   * Toolbar clearance is derrived from the height of a toolbar, which isn't fixed but can be reasonably calculated.
+   * - Top and bottom input padding, adding icon size (the largest content of an input), then adding a spacing unit.
+   * This is then added to the relevant padding side on the adjustable view so the content can clear the toolbar if needed.
+   */
+  --av-content-base-padding: calc(var(--transform-handle-size) * 2 + var(--spacing-unit));
+  --av-toolbar-clearance: calc((var(--input-padding) * 2) + var(--icon-size) + var(--spacing-unit));
+  --adjustable-view-content-padding-right: var(--av-content-base-padding);
+  --adjustable-view-content-padding-left: var(--av-content-base-padding);
+  --adjustable-view-content-padding-bottom: var(--av-content-base-padding);
+  --adjustable-view-content-padding-top: calc(
+    var(--av-content-base-padding) + var(--av-toolbar-clearance)
+  );
+}
 
-  @media (pointer: coarse) {
+@media (pointer: coarse) {
+  :root {
     --spacing-unit: 0.5rem;
     --thumb-size: 2rem;
     --transform-handle-size: 24px;
-    --toolbar-position: bottom;
+  }
+}
+
+@media (orientation: portrait) {
+  :root {
+    /* For portrait layouts (usually mobile) having the toolbar at the bottom is more accessible for the user */
+    --toolbar-position-top: auto;
+    --toolbar-position-bottom: 0;
+    --adjustable-view-content-padding-top: var(--av-content-base-padding);
+    --adjustable-view-content-padding-bottom: calc(
+      var(--av-content-base-padding) + var(--av-toolbar-clearance)
+    );
   }
 }

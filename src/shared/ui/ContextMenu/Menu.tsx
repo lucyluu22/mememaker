@@ -49,7 +49,7 @@ const MenuContainer = styled.div<{ $open: boolean; $openFrom: OpenDirection }>`
   box-shadow: var(--shadow);
   min-width: 160px;
   padding: 0.25rem;
-  z-index: var(--z-index-context-menu);
+  z-index: var(--context-menu-z-index);
   animation: ${props => (props.$open ? slideIn : slideOut)} 0.3s;
   animation-fill-mode: forwards;
   transform-origin: ${props => props.$openFrom} center;
@@ -59,7 +59,7 @@ export const Menu = ({
   open,
   x,
   y,
-  openFrom = "bottom",
+  openFrom = "top",
   menuContainerProps,
   onClose,
   children,

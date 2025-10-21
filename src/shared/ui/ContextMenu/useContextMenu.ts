@@ -21,7 +21,7 @@ export const useContextMenu = ({
   const [openState, setOpenState] = useState<boolean>(false)
   const [x, setX] = useState<number>(0)
   const [y, setY] = useState<number>(0)
-  const [openFrom, setOpenFrom] = useState<OpenDirection>("top")
+  const [openFrom, setOpenFrom] = useState<OpenDirection>()
   const parentElementRef = useRef<HTMLElement | null>(null)
 
   return [
@@ -37,10 +37,7 @@ export const useContextMenu = ({
         setY(options.y)
       }
 
-      if (options.openFrom) {
-        setOpenFrom(options.openFrom)
-      }
-
+      setOpenFrom(options.openFrom)
       setOpenState(true)
     },
     () => {

@@ -3,7 +3,7 @@ import styled from "styled-components"
 export const Icon = styled.span`
   display: inline-block;
   line-height: 0;
-  font-size: 150%;
+  font-size: var(--icon-size);
   padding: 0;
   background: none;
   border: none;

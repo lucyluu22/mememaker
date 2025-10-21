@@ -8,7 +8,7 @@ export const TransformControlsRootContext = React.createContext<HTMLElement>(doc
 // This allows the UI to inherit the same layout context (position, transforms, etc) as the elements
 export const TransformControlsRootContainer = styled.div`
   position: relative;
-  z-index: var(--z-index-transform-controls);
+  z-index: var(--transform-controls-z-index);
 `
 export interface TransformControlsRootProps extends React.HTMLAttributes<HTMLDivElement> {
   children?: React.ReactNode

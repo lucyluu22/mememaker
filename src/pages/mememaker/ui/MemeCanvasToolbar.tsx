@@ -43,7 +43,7 @@ export const MemeCanvasToolbar = ({
   toolbarProps,
   children,
 }: MemeCanvasToolbarProps): JSX.Element | null => {
-  const { toolbarPosition } = useContext(ToolbarRootContext)
+  const { root } = useContext(ToolbarRootContext)
   const isActive = useAppSelector(state => selectIsActiveElement(state, id))
   if (!isActive) return null
   return (
@@ -55,7 +55,10 @@ export const MemeCanvasToolbar = ({
           } else {
             onOpenContextMenu({
               parentElement: evt.currentTarget,
-              openFrom: toolbarPosition,
+              openFrom:
+                getComputedStyle(root).getPropertyValue("--toolbar-position-top") === "0"
+                  ? "top"
+                  : "bottom",
             })
           }
         }}
