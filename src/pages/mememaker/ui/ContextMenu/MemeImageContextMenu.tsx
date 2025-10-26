@@ -12,6 +12,8 @@ import { RangeInput } from "src/shared/ui/Inputs"
 import { setActiveElementId } from "../../model/memeCanvasSlice"
 import { removeImage, updateOrder, selectImageById, updateImage } from "../../model/memeSlice"
 
+import { PREVENT_DESELECT_CLASS } from "../constants"
+
 export interface MemeImageContextMenuProps extends MenuProps {
   imageId: MemeImage["id"]
 }
@@ -45,14 +47,15 @@ export const MemeImageContextMenu = ({
   if (!image) return null
 
   const onCopyImage = async () => {
-    const copiedMemeImage = await copyMemeImage(image)
     await navigator.clipboard.write([
       new ClipboardItem({
         // text/plain is guaranteed to be supported across all browsers that support ClipboardItem
-        "text/plain": JSON.stringify({
-          type: "application/x-mememaker.memeimage",
-          data: copiedMemeImage,
-        }),
+        "text/plain": copyMemeImage(image).then(copiedMemeImage =>
+          JSON.stringify({
+            type: "application/x-mememaker.memeimage",
+            data: copiedMemeImage,
+          }),
+        ),
       }),
     ])
     contextMenuProps.onClose()
@@ -81,7 +84,14 @@ export const MemeImageContextMenu = ({
   }
 
   return (
-    <Menu {...contextMenuProps} menuContainerProps={{ "aria-label": "image menu" }}>
+    <Menu
+      {...contextMenuProps}
+      menuContainerProps={{
+        ...contextMenuProps.menuContainerProps,
+        className: PREVENT_DESELECT_CLASS,
+        "aria-label": "image menu",
+      }}
+    >
       <MenuHeader>
         Image
         {(() => {
