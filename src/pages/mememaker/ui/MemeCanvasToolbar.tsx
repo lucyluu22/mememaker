@@ -20,17 +20,19 @@ export {
 
 export interface MemeCanvasToolbarProps {
   id: string | null
+  name?: string
   menuButtonContent?: JSX.Element
   menuButtonProps?: React.ButtonHTMLAttributes<HTMLButtonElement>
   menuProps: MenuProps
   onOpenContextMenu: ContextMenuOpenHandler
   onCloseContextMenu: ContextMenuCloseHandler
-  toolbarProps?: ToolbarProps
+  toolbarProps?: Partial<ToolbarProps>
   children?: React.ReactNode
 }
 
 export const MemeCanvasToolbar = ({
   id,
+  name,
   menuButtonProps = {},
   menuButtonContent = (
     <Icon>
@@ -49,6 +51,7 @@ export const MemeCanvasToolbar = ({
   return (
     <Toolbar className={PREVENT_DESELECT_CLASS} {...toolbarProps}>
       <Button
+        title={name}
         onClick={evt => {
           if (menuProps.open) {
             onCloseContextMenu()

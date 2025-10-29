@@ -2,7 +2,7 @@ import type { JSX, CSSProperties } from "react"
 import { useRef } from "react"
 import styled from "styled-components"
 
-export interface SelectionRegionProps {
+export interface SelectionRegionProps extends React.HTMLAttributes<HTMLDivElement> {
   active: boolean
   x: number
   y: number
@@ -10,7 +10,6 @@ export interface SelectionRegionProps {
   height: number
   scale?: number
   zIndex?: number
-  regionProps?: React.HTMLAttributes<HTMLDivElement>
   children?: React.ReactNode
 }
 
@@ -33,8 +32,8 @@ export const SelectionRegion = ({
   height,
   scale = 1,
   zIndex = 0,
-  regionProps = {},
   children,
+  ...regionProps
 }: SelectionRegionProps): JSX.Element | null => {
   const selectionBox = useRef<HTMLDivElement>(null)
 

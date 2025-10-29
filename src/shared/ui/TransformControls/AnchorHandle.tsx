@@ -13,7 +13,9 @@ export interface Anchor {
   bottom?: boolean
 }
 
-export type AnchorHandleProps = Anchor & {
+export interface AnchorHandleProps
+  extends Anchor,
+    Omit<React.HTMLAttributes<HTMLDivElement>, "onDrag" | "onDragStart"> {
   scale?: number
   sensitivity?: number
   onDrag: ({ dX, dY, anchor }: PointDelta & { anchor: Anchor }) => void
@@ -47,6 +49,7 @@ export const AnchorHandle = ({
   sensitivity = 1,
   onDrag,
   onDragStart,
+  ...handleProps
 }: AnchorHandleProps): JSX.Element => {
   const anchor: Anchor = { top, bottom, left, right }
 
@@ -70,6 +73,7 @@ export const AnchorHandle = ({
       $right={right}
       $scale={scale}
       {...dragHandlers}
+      {...handleProps}
     />
   )
 }

@@ -39,10 +39,10 @@ export const ToggleButton = ({
   labelProps,
 }: ToggleButtonProps): JSX.Element => {
   return (
-    <CheckboxLabel {...labelProps}>
+    <CheckboxLabel role="checkbox" aria-checked={checked} {...labelProps}>
       <input
         type="checkbox"
-        style={{ display: "none" }}
+        className="sr-only"
         checked={checked}
         onChange={() => {
           onChange(!checked)

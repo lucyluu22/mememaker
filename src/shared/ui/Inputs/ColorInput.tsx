@@ -6,6 +6,7 @@ export interface ColorInputProps {
   color?: string
   label?: string
   alpha?: boolean
+  alphaLabel?: string
   onChange: (color: string) => void
   inputProps?: React.InputHTMLAttributes<HTMLInputElement>
 }
@@ -67,6 +68,7 @@ export const ColorInput = ({
   onChange,
   inputProps,
   alpha = false,
+  alphaLabel = `${label ?? ""} Opacity`.trim(),
 }: ColorInputProps): JSX.Element => {
   return (
     <ColorInputContainer>
@@ -95,6 +97,7 @@ export const ColorInput = ({
       {alpha && (
         <AlphaRangeInput
           title="Opacity"
+          aria-label={alphaLabel}
           min={0}
           max={255}
           step={1}

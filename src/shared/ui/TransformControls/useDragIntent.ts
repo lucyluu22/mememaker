@@ -29,7 +29,6 @@ export const useDragIntent = ({
   onDragEnd = noop,
 }: UseDragIntentOptions): DragActionHandlers => {
   const isDragging = useRef(false)
-  const hasCaptured = useRef(false)
   const prevCoords = useRef<{ x: number; y: number }>({ x: 0, y: 0 })
 
   const handleDragAction = useCallback(
@@ -45,10 +44,6 @@ export const useDragIntent = ({
       const yThreshold = Math.abs(dY) >= sensitivity
 
       if (xThreshold || yThreshold) {
-        if (!hasCaptured.current) {
-          evt.currentTarget.setPointerCapture(evt.pointerId)
-          hasCaptured.current = true
-        }
         prevCoords.current.x = x
         prevCoords.current.y = y
         onDrag({ dX, dY })
@@ -63,7 +58,7 @@ export const useDragIntent = ({
       if (shouldDrag !== false) {
         evt.preventDefault()
         isDragging.current = true
-        hasCaptured.current = false
+        evt.currentTarget.setPointerCapture(evt.pointerId)
         prevCoords.current.x = evt.clientX
         prevCoords.current.y = evt.clientY
       }
@@ -83,10 +78,7 @@ export const useDragIntent = ({
   const onPointerUp = useCallback(
     (evt: React.PointerEvent) => {
       isDragging.current = false
-      if (hasCaptured.current) {
-        evt.currentTarget.releasePointerCapture(evt.pointerId)
-        hasCaptured.current = false
-      }
+      evt.currentTarget.releasePointerCapture(evt.pointerId)
       onDragEnd(evt)
     },
     [onDragEnd],

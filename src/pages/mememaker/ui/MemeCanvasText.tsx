@@ -60,13 +60,10 @@ export const MemeCanvasText = ({
 
   return (
     <>
-      <MemeTextContextMenu
-        {...textContextMenuProps}
-        textId={id}
-        menuContainerProps={{ className: PREVENT_DESELECT_CLASS }}
-      />
+      <MemeTextContextMenu {...textContextMenuProps} textId={id} />
       <MemeCanvasToolbar
         id={id}
+        name="Text"
         menuButtonContent={
           <Icon>
             <BiText />

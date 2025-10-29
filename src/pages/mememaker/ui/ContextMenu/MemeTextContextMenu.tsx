@@ -11,6 +11,8 @@ import { Icon } from "src/shared/ui/Icon"
 import { setActiveElementId } from "../../model/memeCanvasSlice"
 import { updateText, removeText, updateOrder, selectTextsById } from "../../model/memeSlice"
 
+import { PREVENT_DESELECT_CLASS } from "../constants"
+
 export interface MemeTextContextMenuProps extends MenuProps {
   textId: MemeText["id"]
 }
@@ -56,7 +58,14 @@ export const MemeTextContextMenu = ({
   }
 
   return (
-    <Menu {...contextMenuProps} menuContainerProps={{ "aria-label": "text menu" }}>
+    <Menu
+      {...contextMenuProps}
+      menuContainerProps={{
+        ...contextMenuProps.menuContainerProps,
+        className: PREVENT_DESELECT_CLASS,
+        "aria-label": "text menu",
+      }}
+    >
       <MenuHeader>Text</MenuHeader>
       <MenuItem as="div">
         <ColorInput

@@ -3,13 +3,12 @@ import ReactDOM from "react-dom"
 import styled from "styled-components"
 import { ToolbarRootContext } from "./ToolbarRoot"
 
-export interface ToolbarProps {
+export interface ToolbarProps extends React.HTMLAttributes<HTMLDivElement> {
   className?: string
-  toolbarProps?: React.HTMLAttributes<HTMLDivElement>
   children: React.ReactNode
 }
 
-export const ToolbarContainer = styled.div`
+export const ToolbarContainer = styled.div.attrs({ role: "toolbar" })`
   display: flex;
   flex-direction: row;
   align-items: stretch;
@@ -21,7 +20,7 @@ export const ToolbarContainer = styled.div`
   padding: var(--spacing-unit);
 `
 
-export const Toolbar = ({ className, toolbarProps, children }: ToolbarProps): JSX.Element => {
+export const Toolbar = ({ className, children, ...toolbarProps }: ToolbarProps): JSX.Element => {
   const { root } = useContext(ToolbarRootContext)
   return ReactDOM.createPortal(
     <ToolbarContainer className={className} {...toolbarProps}>

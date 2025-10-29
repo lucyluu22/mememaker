@@ -37,7 +37,7 @@ export const Handle = styled.div.attrs<HandleProps>(props => ({
   background: var(--transform-handle-color, black);
   color: var(--transform-handle-border-color, white);
   border: 1px solid var(--transform-handle-border-color, white);
-  pointer-events: all;
+  pointer-events: auto;
   top: ${props => (props.$top ? "0" : "")};
   top: ${props => (props.$bottom ? "100%" : "")};
   top: ${props => (!props.$top && !props.$bottom ? "50%" : "")};

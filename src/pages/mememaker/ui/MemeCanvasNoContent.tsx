@@ -26,8 +26,8 @@ export const MemeCanvasNoContent = (): JSX.Element => {
   const { addImage, addText, paste } = useCommonMemeHandlers()
   return (
     <NoContentContainer>
-      <ActionsRow>
-        <Button as="label" title="Add Image" role="button">
+      <ActionsRow role="menubar">
+        <Button as="label" title="Add Image" role="menuitem">
           <Icon>
             <BiImageAdd />
           </Icon>
@@ -49,6 +49,7 @@ export const MemeCanvasNoContent = (): JSX.Element => {
             addText()
           }}
           title="Add Text"
+          role="menuitem"
         >
           <Icon>
             <BiText />
@@ -60,6 +61,7 @@ export const MemeCanvasNoContent = (): JSX.Element => {
             void paste()
           }}
           title="Paste from Clipboard"
+          role="menuitem"
         >
           <Icon>
             <BiClipboard />

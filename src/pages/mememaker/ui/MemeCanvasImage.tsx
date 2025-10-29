@@ -17,7 +17,6 @@ import {
 
 import { MemeCanvasToolbar } from "./MemeCanvasToolbar"
 import { MemeImageContextMenu, useMemeImageContextMenu } from "./ContextMenu/MemeImageContextMenu"
-import { PREVENT_DESELECT_CLASS } from "./constants"
 
 const Image = styled.img`
   position: absolute;
@@ -54,13 +53,10 @@ export const MemeCanvasImage = ({
 
   return (
     <>
-      <MemeImageContextMenu
-        {...imageContextMenuProps}
-        imageId={id}
-        menuContainerProps={{ className: PREVENT_DESELECT_CLASS }}
-      />
+      <MemeImageContextMenu {...imageContextMenuProps} imageId={id} />
       <MemeCanvasToolbar
         id={id}
+        name="Image"
         menuButtonContent={
           <Icon>
             <BiImageAlt />

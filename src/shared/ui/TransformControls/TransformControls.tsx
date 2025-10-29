@@ -213,6 +213,7 @@ export const TransformControls = ({
           height={height}
           scale={scale}
           zIndex={zIndex}
+          data-testid="transform-controls"
           {...selectionRegionProps}
         >
           {getAnchorHandles().map(anchor => (
@@ -222,10 +223,18 @@ export const TransformControls = ({
               scale={scale}
               onDrag={onAnchorDrag}
               onDragStart={onAnchorDragStart}
+              data-testid={`anchor-handle-${Object.keys(anchor).join("-")}`}
             />
           ))}
           {hasMoveHandle && (
-            <MoveHandle $top $left $scale={scale} {...dragMoveHandlers} {...moveHandleProps} />
+            <MoveHandle
+              $top
+              $left
+              $scale={scale}
+              data-testid="move-handle"
+              {...dragMoveHandlers}
+              {...moveHandleProps}
+            />
           )}
         </SelectionRegion>,
         root,
