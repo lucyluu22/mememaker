@@ -4,14 +4,6 @@
 import { test, expect } from "./fixtures"
 
 test.describe("4. Text Management", () => {
-  // Helper to add text via meme menu
-  async function addTextViaMenu(page, memeMakerPage) {
-    await memeMakerPage.goto()
-    await memeMakerPage.memeMenuButton.click()
-    const addTextMenuItem = page.getByRole("menuitem", { name: /add text/i })
-    await addTextMenuItem.click()
-  }
-
   test("4.1 Add Text via Menu", async ({ page, memeMakerPage }) => {
     // 1. Open the meme menu
     await memeMakerPage.goto()

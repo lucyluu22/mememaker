@@ -87,7 +87,7 @@ test.describe("7. Copy and Export Operations", () => {
         const blob = await res.blob()
         await navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })])
         return true
-      } catch (e) {
+      } catch {
         return false
       }
     })
