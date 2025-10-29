@@ -43,13 +43,7 @@ export default defineConfig({
 
     {
       name: "firefox",
-      testIgnore: "**/7-copy-export.spec.ts",
       use: { ...devices["Desktop Firefox"] },
-    },
-    {
-      name: "firefox",
-      testMatch: "**/7-copy-export.spec.ts",
-      use: { ...devices["Desktop Firefox"], headless: false },
     },
 
     {
