@@ -65,19 +65,17 @@ export const MemeContextMenu = (contextMenuProps: MenuProps): JSX.Element => {
   }
 
   const onCopyToClipboard = async () => {
-    const imageBlob = await renderMemeToImage()
     await navigator.clipboard.write([
       new ClipboardItem({
         // image/png is guaranteed to be supported across all browsers that support ClipboardItem
-        "image/png": imageBlob,
+        "image/png": await renderMemeToImage(),
       }),
     ])
     contextMenuProps.onClose()
   }
 
   const onDownload = async () => {
-    const imageBlob = await renderMemeToImage()
-    const url = URL.createObjectURL(imageBlob)
+    const url = URL.createObjectURL(await renderMemeToImage())
     const link = document.createElement("a")
     link.href = url
     link.download = "meme.png"
