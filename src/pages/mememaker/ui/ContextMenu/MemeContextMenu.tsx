@@ -68,7 +68,7 @@ export const MemeContextMenu = (contextMenuProps: MenuProps): JSX.Element => {
     await navigator.clipboard.write([
       new ClipboardItem({
         // image/png is guaranteed to be supported across all browsers that support ClipboardItem
-        "image/png": await renderMemeToImage(),
+        "image/png": renderMemeToImage(),
       }),
     ])
     contextMenuProps.onClose()
